@@ -1,0 +1,21 @@
+# This has the database connection password and other secret keys
+wp-config.php
+
+# Server specific files
+.htaccess
+favicon.ico
+
+# This file is added on Mac's for the Finder app
+.DS_Store
+
+.bash_history
+
+.cache
+
+wp-content/updraft
+wp-content/uploads
+
+log
+
+wp-content/cache
+wp-content/w3tc-config
