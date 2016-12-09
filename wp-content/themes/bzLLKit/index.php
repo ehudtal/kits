@@ -44,7 +44,10 @@ get_header(); ?>
 									<header class="entry-header">
 										<h3 class="entry-title">
 											<a href="<?php the_permalink();?>" title="<?php the_title();?>">
-												<?php echo __('Learning Lab ','bz'). bz_calculate_kit_number() .': '. get_the_title(); // bz_calculate_kit_number() is in functions.php ?>
+												<?php	
+													bz_kit_title_prefix(); // see functions.php
+													the_title();
+												?>
 											</a>
 										</h3>
 									</header><!-- .entry-header -->
