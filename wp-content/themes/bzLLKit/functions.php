@@ -684,19 +684,14 @@ add_filter( 'tiny_mce_before_init', 'bz_mce_before_init_insert_formats' );
 
 
 /* Generate a prefix for LL titles to show week number: */
-function bz_kit_title_prefix() {
+
+
+// collect post IDs in a global array for all the kits that are LLs (or are not defined as anything else):
+$only_lls = only_lls();
+function only_lls(){
 	global $post;
-	$kit_type = get_post_custom_values('bz_kit_type', $post->ID);
-	if ( $kit_type == 'll' || empty($kit_type)  ) {
-		echo __('Learning Lab ','bz'). bz_calculate_kit_number() .': '; 
-		// bz_calculate_kit_number() is in functions.php
-	}
-}
-/* Figure out week numbers based on published kits */
-function bz_calculate_kit_number() {
-	global $post;
-	$current_kit = $post->ID;
-	$counter = 0;
+	$only_lls = array();
+	// get all kits using this sub-query:
 	$cargs = array (
 		'post_type'              => 'kit',
 		'post_status'            => 'publish',
@@ -709,16 +704,30 @@ function bz_calculate_kit_number() {
 	if ( $ckits->have_posts() ) { 
 		while ( $ckits->have_posts() ) { 
 			$ckits->the_post();
-			$counter ++;			
-			if ($current_kit == $post->ID) {
-				return $counter;
+			$kit_type = get_post_custom_values('bz_kit_type', $post->ID);
+			if ( $kit_type == 'll' || empty($kit_type)  )  {
+				$only_lls[] = $post->ID;	
 			}
 		}
-	} else {
-		// no posts found
 	}
-	// Restore original Post Data
-	wp_reset_postdata();	
+	return $only_lls;	
 }
+// Create a "filter" that adds the LL number to relevant kits:
+function bz_kit_title_prefix($title) {
+	global $post;
+	global $only_lls;
+
+	$counter = 0;
+	
+	foreach ($only_lls as $ll) {
+		$counter ++;
+		if ($ll == $post->ID) {
+			$title = __('Learning Lab ','bz').$counter.': '.$title;
+		} 
+	} 
+	return $title;
+
+}
+add_filter('the_title', 'bz_kit_title_prefix');
 
 /**/

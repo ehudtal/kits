@@ -7,6 +7,9 @@
  * @since LL Kit 1.0
  */
 
+// Reset because we had to run a sub-query to form the title:
+wp_reset_query();
+
 get_header(); ?>
 <div id="primary" class="content-area">
 	<main id="main" class="site-main" role="main">
@@ -19,7 +22,7 @@ get_header(); ?>
 			<div class="kit-masthead">
 				<h1>
 					<?php 
-					bz_kit_title_prefix(); // see functions.php
+					//bz_kit_title_prefix(); // see functions.php
 					the_title(); ?>
 				</h1>
 				<?php the_excerpt();?>

@@ -44,17 +44,12 @@ get_header(); ?>
 									<header class="entry-header">
 										<h3 class="entry-title">
 											<a href="<?php the_permalink();?>" title="<?php the_title();?>">
-												<?php	
-													bz_kit_title_prefix(); // see functions.php
-													the_title();
-												?>
+												<?php	the_title();?>
 											</a>
 										</h3>
 									</header><!-- .entry-header -->
 									<div class="entry-content">
-										<?php
-										the_content();
-										?>
+										<?php the_excerpt();	?>
 									</div><!-- .entry-content -->
 								
 									<?php
