@@ -10,6 +10,10 @@
 // Reset because we had to run a sub-query to form the title:
 wp_reset_query();
 
+// set up a place to store activities so we don't have to query the DB more than once.
+$activity_posts = array();
+$full_activities ="";
+
 get_header(); ?>
 <div id="primary" class="content-area">
 	<main id="main" class="site-main" role="main">
@@ -58,7 +62,6 @@ get_header(); ?>
 	
 	if (!empty($customfields['bz_kit_agenda'])) {
 		// Get the activities linked from the kit's agenda list:
-		$activity_posts = array();
 		$activity_links = array();
 		$list_of_links = $customfields['bz_kit_agenda'][0];
 	
@@ -95,16 +98,28 @@ get_header(); ?>
 			
 			<table class="agenda">
 				<?php 
-				foreach ($activity_posts as $activity_post) { 
+				foreach ($activity_posts as $activity_key => $activity_post) { 
 					if ($activity_post->post_status == 'publish') { ?>
 						<tr>
 							<td>
 								<?php 
 								$activity_duration = get_post_meta( $activity_post->ID, 'bz_activity_attributes_minutes', 'true' );
-								// show start time and add minutes from this activity
+								// Show start time and add minutes from this activity
 								// forcing (int)$activity_duration to convert empties to zeros.
+								// Also add those times as properties to the post object for later use.
 								echo $dt->format('g:i a');
-								$dt->add(new DateInterval('PT'.(int)$activity_duration.'M'));           
+								// Convert post object to array so we can add properties:
+								$activity_post = (array)$activity_post;
+								$activity_post['start_time'] = (string)$dt->format('g:i');
+								// Increase $dt by the activity's duration and add it to the post object as well:
+								$dt->add(new DateInterval('PT'.(int)$activity_duration.'M'));
+								// And store the duration and end time for late:
+								$activity_post['duration'] = (string)(int)$activity_duration;
+								$activity_post['end_time'] = (string)$dt->format('g:i a');   
+								// Now convert it back to an object:
+								$activity_post = (object)$activity_post;
+								// And save the changes back to the posts array so we can use them later:
+								$activity_posts[$activity_key] = $activity_post;
 								?>
 							</td>
 							<td>
@@ -208,14 +223,38 @@ get_header(); ?>
 		<div class="sub-activities">
 			<h2 id="activity-plan-header"><?php echo __('Activity Plan', 'bz'); ?></h2>
 			<?php 
-			foreach ($activity_posts as $activity) {
-				// since we already querried the DB for all post data, we can fake a WP_Query thus:
-				global $post; 
-				$post = get_post( $activity->ID, OBJECT );
-				setup_postdata( $post );			
-				get_template_part('content','activity');
-				wp_reset_postdata();
-			} // end foreach ?>
+			
+			foreach ($activity_posts as $activity_post) {	?>
+				<article class="activity" id="<?php echo $activity_post->post_name; ?>">
+					<header class="activity-header">
+						<span class="duration start"><?php echo $activity_post->start_time;?></span>
+						<span class="duration end">&ndash;&nbsp;<?php echo $activity_post->end_time;?></span><br />
+						<span class="duration">[<?php echo $activity_post->duration;?>]</span>
+						<span class="activity-title"><?php echo $activity_post->post_title;?></span>
+						<?php 
+							global $bz_scopes;
+							$activity_scope = get_post_meta( $activity_post->ID, 'bz_activity_attributes_group_scope', 'true' );
+								if ($activity_scope) { ?>
+									<span class="scope scope-'<?php echo $activity_scope;?>">
+										<?php echo $bz_scopes[$activity_scope]; // get title by key. $bz_scopes is defined in functions.php ?>
+									</span>
+								<?php } // end if scope ?>
+					</header>
+					<div class="activity-outcomes"><?php echo apply_filters('the_content', $activity_post->post_excerpt); ?></div>
+					<div class="activity-content"><?php echo apply_filters('the_content', $activity_post->post_content); ?></div>
+					<?php if ( current_user_can( 'edit_posts' ) ) { ?>
+						<footer class="activity-footer">
+							<span class="edit-link">
+								<a href="<?php get_edit_post_link($activity_post->ID); ?>">
+									<?php echo __('Edit', 'bz');?>
+									<span class="screen-reader-text"><?php echo $activity_post->post_title; ?></span>
+								</a>
+							</span>
+						</footer><!-- .activity-footer -->
+					<?php } ?>
+				</article>
+
+			<?php } // end foreach */ ?>
 		</div>
 	<?php } //!empty($activity_posts)  ?>
 	<?php
