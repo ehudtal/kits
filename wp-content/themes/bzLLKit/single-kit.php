@@ -59,7 +59,7 @@ get_header(); ?>
 	foreach ($kit_level_materials as $kit_level_material) {
 		$materials[$kit_level_material->slug] = $kit_level_material;
 	}
-	
+
 	if (!empty($customfields['bz_kit_agenda'])) {
 		// Get the activities linked from the kit's agenda list:
 		$activity_links = array();
@@ -159,15 +159,20 @@ get_header(); ?>
 	
 	<?php
 	
-	if (!empty($materials)) {
-		echo '<h2>'.__('Materials','bz').'</h2>';
-		echo '<ul>';
-		foreach ($materials as $material) {
-			echo '<li>'.$material->name.'</li>';
-		}
-		echo '</ul>';
-	}
-	?>
+	if (!empty($materials)) { ?>
+		<h2><?php echo __('Materials','bz'); ?></h2>
+		<ul>
+			<?php foreach ($materials as $material) { ?>
+				<li>
+					<?php if ( strpos($material->description,'http') === 0 ) { ?>
+						<a href="<?php echo $material->description; ?>" target="_blank" title="<?php echo __('Open this resource in a new tab', 'bz');?>"><?php echo $material->name; ?></a>
+					<?php } else {
+						echo $material->name;
+					} ?>
+				</li>
+			<?php } // end foreach ?>
+		</ul>
+	<?php } // end if (!empty($materials)) ?>
 	
 	<?php
 	if (!empty($customfields['bz_kit_important'])){ ?>
