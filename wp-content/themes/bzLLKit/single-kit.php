@@ -37,7 +37,7 @@ get_header(); ?>
 	$customfields=(get_post_custom($post->ID));
 
 	if (!empty($customfields['bz_kit_vision'])){ ?>
-		<div class="outcomes">
+		<div class="kit-component vision">
 			<h2><?php echo __('Vision', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_vision'][0]);?>
 		</div> <?php
@@ -45,7 +45,7 @@ get_header(); ?>
 	<?php 
 	// Make sure there's at least the first outcome, then get all three:
 	if (!empty($customfields['bz_kit_outcomes'])){ ?>
-		<div class="outcomes">
+		<div class="kit-component outcomes">
 			<h2><?php echo __('Fellows Will:', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_outcomes'][0]);?>
 		</div> <?php
@@ -93,10 +93,13 @@ get_header(); ?>
 			} else if ($dtadjust[0] > 0) {
 				$dt->add(new DateInterval('PT'.$dtadjust[0].'M'));
 			}		
-			
-			echo '<h2>'.__('Agenda','bz').'</h2>';	?>
-			
-			<table class="agenda">
+			?>
+			<table class="kit-component agenda">
+				<caption>
+					<h2>
+						<?php echo __('Agenda','bz');?>
+					</h2>
+				</caption>
 				<?php 
 				foreach ($activity_posts as $activity_key => $activity_post) { 
 					if ($activity_post->post_status == 'publish') { ?>
@@ -150,7 +153,7 @@ get_header(); ?>
 	
 	<?php
 	if (!empty($customfields['bz_kit_prework'])){ ?>
-		<div class="outcomes">
+		<div class="kit-component prework">
 			<h2><?php echo __('Fellows\' Prework', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_prework'][0]);?>
 		</div> <?php
@@ -160,23 +163,25 @@ get_header(); ?>
 	<?php
 	
 	if (!empty($materials)) { ?>
-		<h2><?php echo __('Materials','bz'); ?></h2>
-		<ul>
-			<?php foreach ($materials as $material) { ?>
-				<li>
-					<?php if ( strpos($material->description,'http') === 0 ) { ?>
-						<a href="<?php echo $material->description; ?>" target="_blank" title="<?php echo __('Open this resource in a new tab', 'bz');?>"><?php echo $material->name; ?></a>
-					<?php } else {
-						echo $material->name;
-					} ?>
-				</li>
-			<?php } // end foreach ?>
-		</ul>
+		<div class="kit-component materials">
+			<h2><?php echo __('Materials','bz'); ?></h2>
+			<ul>
+				<?php foreach ($materials as $material) { ?>
+					<li>
+						<?php if ( strpos($material->description,'http') === 0 ) { ?>
+							<a href="<?php echo $material->description; ?>" target="_blank" title="<?php echo __('Open this resource in a new tab', 'bz');?>"><?php echo $material->name; ?></a>
+						<?php } else {
+							echo $material->name;
+						} ?>
+					</li>
+				<?php } // end foreach ?>
+			</ul>
+		</div>
 	<?php } // end if (!empty($materials)) ?>
 	
 	<?php
 	if (!empty($customfields['bz_kit_important'])){ ?>
-		<div class="outcomes">
+		<div class="kit-component important">
 			<h2><?php echo __('What\'s most important', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_important'][0]);?>
 		</div> <?php
@@ -187,8 +192,8 @@ get_header(); ?>
 	// Iterate through logistics fields if there are any
 	global $bz_logistics; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_logistics))) { ?>
-		<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
-		<div id="logistics">
+		<div id="logistics" class="kit-component logistics">
+			<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
 			foreach ($bz_logistics as $bz_logistics_field_key => $bz_logistics_field_attributes) {
@@ -206,8 +211,8 @@ get_header(); ?>
 	// Iterate through staff tasks if there are any:
 	global $bz_staff_tasks; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_staff_tasks))) { ?>
-		<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
-		<div id="staff-tasks">
+		<div class="kit-component staff-tasks" id="staff-tasks">
+			<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
 			foreach ($bz_staff_tasks as $bz_staff_tasks_field_key => $bz_staff_tasks_attributes) {
@@ -225,7 +230,7 @@ get_header(); ?>
 	// query full activity content and display it:
 
 	if (!empty($activity_posts)) { ?>
-		<div class="sub-activities">
+		<div class="kit-component sub-activities">
 			<h2 id="activity-plan-header"><?php echo __('Activity Plan', 'bz'); ?></h2>
 			<?php 
 			
@@ -265,7 +270,7 @@ get_header(); ?>
 	<?php
 	
 	if (!empty($customfields['bz_kit_appendix'])){ ?>
-		<div class="outcomes">
+		<div class="kit-component appendix">
 			<h2><?php echo __('Appendix', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_appendix'][0]);?>
 		</div> <?php
