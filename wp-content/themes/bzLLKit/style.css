@@ -293,7 +293,6 @@ body {
 	line-height: 1.2em;
 }
 #masthead {
-	height: 1.5em;
 	padding: 0 20px;
 }
 h1,h2,h3,h4,h5,h6,
@@ -314,7 +313,8 @@ th,
 }
 h2 {
 	font-size: 20px;
-	margin-top: 40px;
+	margin: 10px 0;
+	position: relative;
 }
 table caption {
 	text-align: left;
@@ -326,9 +326,9 @@ table caption {
 .site-inner > *  {
 	padding: 0px;
 }
-.kit-component,
-.site-main > p {
+.kit-component {
 	padding: 10px;
+	border-bottom: 1px solid #333;
 }
 .sub-activities {
 	padding: 0;	
@@ -361,16 +361,13 @@ a:hover {
 .agenda td:first-child {
 	width: 80px;	
 }
-#activity-plan-header {
-	margin-top: 3em;	
-}
 .activity-desc {
 	font-style:italic;
 }
 .activity {
 	position: relative;
 	margin: 0;
-	border-top: solid 1px #000;
+	border-top: solid 1px #CCC;
 }
 .activity:last-child {
 	border-bottom: solid 1px #000;	
@@ -468,6 +465,7 @@ a:hover {
 	bottom: 0px;
 	left: 0px;
 	padding: 10px;
+	margin-bottom: 7px;
 	color: #FFF;	
 }
 .kit-masthead h1,
@@ -487,9 +485,15 @@ a:hover {
 	-webkit-filter:brightness(50%)  sepia(75%);
 	filter:brightness(50%) sepia(75%);
 }
-.kit-header .bkg img {
-	position: relative;
-	left: -50%;
+.site-branding {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	z-index: 9;
+}
+.site-branding a {
+	color: #FFF;
+	padding: 10px;
 }
 .activity-content {
 	border-left: transparent 10px solid;	
@@ -498,6 +502,9 @@ a:hover {
 	border-left: #EB3B46 solid 10px;
 	position: relative;
 	left: -10px;
+}
+.activity .duration {
+	font-size: 0.75em;	
 }
 .activity .scope {
 	color: #ACACAC;

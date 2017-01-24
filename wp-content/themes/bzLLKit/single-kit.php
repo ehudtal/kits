@@ -32,7 +32,9 @@ get_header(); ?>
 				<?php the_excerpt();?>
 			</div>
 		</header>
-	<?php the_content();?>
+		<div class="kit-component intro">
+			<?php the_content();?>
+		</div>
 	<?php
 	$customfields=(get_post_custom($post->ID));
 
@@ -192,7 +194,7 @@ get_header(); ?>
 	// Iterate through logistics fields if there are any
 	global $bz_logistics; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_logistics))) { ?>
-		<div id="logistics" class="kit-component logistics">
+		<div id="logistics" class="kit-component logistics collapsed">
 			<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
@@ -211,7 +213,7 @@ get_header(); ?>
 	// Iterate through staff tasks if there are any:
 	global $bz_staff_tasks; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_staff_tasks))) { ?>
-		<div class="kit-component staff-tasks" id="staff-tasks">
+		<div id="staff-tasks" class="kit-component staff-tasks collapsed">
 			<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
@@ -237,9 +239,11 @@ get_header(); ?>
 			foreach ($activity_posts as $activity_post) {	?>
 				<article class="activity" id="<?php echo $activity_post->post_name; ?>">
 					<header class="activity-header">
-						<span class="duration start"><?php echo $activity_post->start_time;?></span>
-						<span class="duration end">&ndash;&nbsp;<?php echo $activity_post->end_time;?></span><br />
-						<span class="duration">[<?php echo $activity_post->duration;?>]</span>
+						<div class="duration">
+							<span class="start"><?php echo $activity_post->start_time;?></span>
+							<span class="end">&ndash;&nbsp;<?php echo $activity_post->end_time;?></span>
+							<span class="minutes">&nbsp;&nbsp;[<?php echo $activity_post->duration .'&nbsp;'. __('Minutes', 'bz'); ?>]</span>
+						</div>						
 						<span class="activity-title"><?php echo $activity_post->post_title;?></span>
 						<?php 
 							global $bz_scopes;
