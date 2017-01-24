@@ -292,8 +292,14 @@ body {
 	font-family: Georgia, serif;
 	line-height: 1.2em;
 }
+.site-inner {
+	position: relative;
+}
 #masthead {
 	padding: 0 20px;
+}
+#agenda {
+	display: none;	
 }
 h1,h2,h3,h4,h5,h6,
 th,
@@ -369,9 +375,6 @@ a:hover {
 	margin: 0;
 	border-top: solid 1px #CCC;
 }
-.activity:last-child {
-	border-bottom: solid 1px #000;	
-}
 .activity header {
 	position: relative;
 	background: #EBF7F7;	
@@ -379,7 +382,8 @@ a:hover {
 .activity-outcomes {
 	background: #EBF7F7;
 }
-.activity header:after {
+.activity header:after,
+.collapsible:after {
 	content: "\2715";
 	position: absolute;
 	right: 10px;
@@ -389,10 +393,14 @@ a:hover {
 	line-height: 1;
 	transition: all 0.3s;
 }
+.collapsible:after {
+	top: 0;	
+}
 .activity header:active:after {
 	background: #9AD7D7;
 }
-.activity header.collapsed:after{
+.collapsible.collapsed:after,
+.activity header.collapsed:after {
    -webkit-transform: rotate(-45deg);
    -moz-transform: rotate(-45deg);
    -ms-transform: rotate(-45deg);
@@ -400,7 +408,8 @@ a:hover {
    transform: rotate(-45deg);
    zoom: 1;
 }
-.activity header:hover {
+.activity header:hover,
+.collapsible:hover {
 	cursor: n-resize;	
 }
 .activity-outcomes {
@@ -416,6 +425,9 @@ a:hover {
 .activity > footer {
 	padding: 10px;
 	margin: 0;
+}
+.sub-activities > h2 {
+	margin: 10px 0;	
 }
 .activity-content > *:first-child {
 	margin-top: 0;		

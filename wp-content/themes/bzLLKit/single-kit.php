@@ -32,9 +32,11 @@ get_header(); ?>
 				<?php the_excerpt();?>
 			</div>
 		</header>
-		<div class="kit-component intro">
-			<?php the_content();?>
-		</div>
+		<?php if (!empty($post->post_content)) { ?>
+			<div class="kit-component intro">
+				<?php the_content();?>
+			</div>
+		<?php } ?>
 	<?php
 	$customfields=(get_post_custom($post->ID));
 
@@ -96,12 +98,9 @@ get_header(); ?>
 				$dt->add(new DateInterval('PT'.$dtadjust[0].'M'));
 			}		
 			?>
-			<table class="kit-component agenda">
-				<caption>
-					<h2>
-						<?php echo __('Agenda','bz');?>
-					</h2>
-				</caption>
+			<div id="agenda" class="kit-component agenda">
+				<h2><?php echo __('Agenda','bz');?></h2>
+				<table>
 				<?php 
 				foreach ($activity_posts as $activity_key => $activity_post) { 
 					if ($activity_post->post_status == 'publish') { ?>
@@ -146,7 +145,8 @@ get_header(); ?>
 					} // end if ($activity_post->post_status == 'publish')
 				} // end foreach 
 				?>
-			</table>
+				</table>
+			</div>
 		<?php  
 	
 		}	// end if (!empty($activity_posts))
@@ -194,7 +194,7 @@ get_header(); ?>
 	// Iterate through logistics fields if there are any
 	global $bz_logistics; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_logistics))) { ?>
-		<div id="logistics" class="kit-component logistics collapsed">
+		<div id="logistics" class="kit-component logistics start-collapsed">
 			<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
@@ -213,7 +213,7 @@ get_header(); ?>
 	// Iterate through staff tasks if there are any:
 	global $bz_staff_tasks; // from functions.php
 	if(!empty(array_intersect_key($customfields, $bz_staff_tasks))) { ?>
-		<div id="staff-tasks" class="kit-component staff-tasks collapsed">
+		<div id="staff-tasks" class="kit-component staff-tasks start-collapsed">
 			<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
 			<?php 
 			// and now iterate through the logistics fields:
@@ -232,7 +232,7 @@ get_header(); ?>
 	// query full activity content and display it:
 
 	if (!empty($activity_posts)) { ?>
-		<div class="kit-component sub-activities">
+		<div class="kit-component sub-activities non-collapsible">
 			<h2 id="activity-plan-header"><?php echo __('Activity Plan', 'bz'); ?></h2>
 			<?php 
 			
@@ -274,7 +274,7 @@ get_header(); ?>
 	<?php
 	
 	if (!empty($customfields['bz_kit_appendix'])){ ?>
-		<div class="kit-component appendix">
+		<div class="kit-component appendix start-collapsed">
 			<h2><?php echo __('Appendix', 'bz'); ?></h2>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_appendix'][0]);?>
 		</div> <?php
