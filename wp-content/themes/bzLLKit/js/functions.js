@@ -23,6 +23,9 @@
 		}
 	}).click();
 	
+	/* Assign a class to li containing blockquote so we can style them differently */
+	$('li > blockquote').parent().addClass('has-quote');	
+	
 	/* Show/hide space for notes
 	$('#activity-plan-header').append('<a class="btn" id="add-notes-btn" title="Show or hide space for notes" href="#activity-plan-header">Show/hide notes</a>').click(function(e){
 		e.preventDefault();
