@@ -509,6 +509,7 @@ a:hover {
 }
 .activity-content {
 	border-left: transparent 10px solid;	
+	margin: 20px 0;
 }
 .activity .core {
 	border-left: #EB3B46 solid 10px;
