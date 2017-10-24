@@ -311,7 +311,9 @@ th,
 .kit-title,
 .activity .duration,
 .agenda .activity-name,
-.activity .scope {
+.activity .scope,
+.sub-duration,
+.core::before {
 	font-family: "TradeGothicNo.20-CondBold", "Oswald", "Arial Narrow", sans-serif;
 	text-transform: uppercase;
 	line-height: normal;
@@ -515,13 +517,38 @@ a:hover {
 	margin: 20px 0;
 }
 .activity .core {
-	border-left: #EB3B46 solid 10px;
+	border: #EB3B46 solid 5px;
 	position: relative;
-	left: -10px;
+	padding: 20px;
+	margin-left: -10px;
+}
+.core::before {
+  content: "CORE ACTIVITY";
+  color: #EB3B46;
 }
 .activity .duration,
 .activity .scope {
 	font-size: 0.75em;	
+}
+.sub-duration {
+	float: left;
+	font-size: 13px;
+	padding: 3px 5px;
+	margin: 0.5em;
+	color: #333;
+	background: #DDD;
+	border-radius: 2px;
+}
+.sub-duration::before {
+	content: "\1F551";
+  display: inline-block;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 0.8em;
+  position: relative;
+  bottom: 1px;
+  margin-right: 2px; 
+
 }
 .activity .scope {
 	color: #ACACAC;

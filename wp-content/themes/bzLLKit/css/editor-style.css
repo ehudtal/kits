@@ -545,3 +545,7 @@ fieldset {
 .rtl table caption {
 	text-align: right;
 }
+
+.duration {
+	color: #eb3b46;
+}

@@ -89,6 +89,7 @@ function bz_setup() {
 		'comment-list',
 		'gallery',
 		'caption',
+		'editor-style',
 	) );
 
 	/*
@@ -669,14 +670,20 @@ add_filter( 'mce_buttons_2', 'bz_mce_buttons_2' );
 // Now add the custom styles:
 function bz_mce_before_init_insert_formats( $init_array ) {  
 	$style_formats = array(  
-		// Each array child is a format with it's own settings
+		// Each child array in here is a format with its own settings
 		array(  
 			'title' => 'Core activity',  
 			'block' => 'div',  
 			'classes' => 'core',
 			'exact' => true,
 			'wrapper' => true,
-		
+		), 
+		array(  
+			'title' => 'Sub-activity duration',  
+			'block' => 'div',  
+			'classes' => 'sub-duration',
+			'exact' => true,
+			'wrapper' => true,
 		), 
 	);  
 	// Insert the array, JSON ENCODED, into 'style_formats'
