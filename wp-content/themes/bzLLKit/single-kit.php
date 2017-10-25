@@ -25,9 +25,7 @@ get_header(); ?>
 			</div>
 			<div class="kit-masthead">
 				<h1>
-					<?php 
-					//bz_kit_title_prefix(); // see functions.php
-					the_title(); ?>
+					<?php the_title(); ?>
 				</h1>
 				<?php the_excerpt();?>
 			</div>

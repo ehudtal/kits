@@ -10,8 +10,8 @@
  * @link http://codex.wordpress.org/Template_Hierarchy
  *
  * @package WordPress
- * @subpackage Braven_LL_Kit
- * @since LL Kit 1.0
+ * @subpackage Braven_LL_course
+ * @since LL course 1.0
  */
 
 get_header(); ?>
@@ -19,22 +19,22 @@ get_header(); ?>
 		<main id="main" class="site-main" role="main">
 
 			<?php
-			// List the kits:
+			// List the courses:
 			$args = array (
-				'post_type'              => array( 'kit' ),
+				'post_type'              => array( 'course' ),
 				'post_status'            => array( 'publish' ),
 				'nopaging'               => true,
 				'posts_per_page'         => '-1',
 				'order'                  => 'ASC',
 				'orderby'                => 'menu_order',
 			);
-			$kits = new WP_Query( $args );
-			if ( $kits->have_posts() ) { ?>
-				<h2><?php echo __('All Kits:', 'bz');?></h2>				
-				<table id="kits">
-					<?php // loop through the kits:
-					while ( $kits->have_posts() ) {
-						$kits->the_post(); ?>
+			$courses = new WP_Query( $args );
+			if ( $courses->have_posts() ) { ?>
+				<h2><?php echo __('All courses:', 'bz');?></h2>				
+				<table id="courses">
+					<?php // loop through the courses:
+					while ( $courses->have_posts() ) {
+						$courses->the_post(); ?>
 	
 							<tr id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 								<td class="visual">
@@ -68,7 +68,7 @@ get_header(); ?>
 							</tr>
 						<?php
 					} //end while ?>
-					</table><!-- #kits -->
+					</table><!-- #courses -->
 				<?php 
 				} else {
 					// no posts found
