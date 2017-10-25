@@ -533,22 +533,24 @@ a:hover {
 .sub-duration {
 	float: left;
 	font-size: 13px;
+}
+.sub-duration,
+.minutes {
 	padding: 3px 5px;
 	margin: 0.5em;
 	color: #333;
 	background: #DDD;
 	border-radius: 2px;
 }
-.sub-duration::before {
-	content: "\1F551";
+.sub-duration::before,
+.minutes::before {
+	content: "\1F553";
   display: inline-block;
   font-weight: normal;
   font-style: normal;
-  font-size: 0.8em;
   position: relative;
   bottom: 1px;
   margin-right: 2px; 
-
 }
 .activity .scope {
 	color: #ACACAC;

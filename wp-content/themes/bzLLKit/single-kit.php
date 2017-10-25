@@ -117,12 +117,12 @@ get_header(); ?>
 								$activity_post['start_time'] = (string)$dt->format('g:i');
 								// Increase $dt by the activity's duration and add it to the post object as well:
 								$dt->add(new DateInterval('PT'.(int)$activity_duration.'M'));
-								// And store the duration and end time for late:
+								// And store the duration and end time for later:
 								$activity_post['duration'] = (string)(int)$activity_duration;
 								$activity_post['end_time'] = (string)$dt->format('g:i a');   
 								// Now convert it back to an object:
 								$activity_post = (object)$activity_post;
-								// And save the changes back to the posts array so we can use them later:
+								// And save the changes back to the posts array so we can use them in the content:
 								$activity_posts[$activity_key] = $activity_post;
 								?>
 							</td>
@@ -243,7 +243,7 @@ get_header(); ?>
 						<div class="duration">
 							<span class="start"><?php echo $activity_post->start_time;?></span>
 							<span class="end">&ndash;&nbsp;<?php echo $activity_post->end_time;?></span>
-							<span class="minutes">&nbsp;&nbsp;[<?php echo $activity_post->duration .'&nbsp;'. __('Minutes', 'bz'); ?>]</span>
+							<span class="minutes"><?php echo $activity_post->duration .'&nbsp;'. __('Minutes', 'bz'); ?></span>
 						</div>						
 						<span class="activity-title"><?php echo $activity_post->post_title;?></span>
 						<?php 
