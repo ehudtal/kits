@@ -178,45 +178,6 @@ get_header(); ?>
 			</ul>
 		</div>
 	<?php } // end if (!empty($materials)) ?>
-	
-	<?php 
-	// Iterate through logistics fields if there are any
-	global $bz_logistics; // from functions.php
-	if(!empty(array_intersect_key($customfields, $bz_logistics))) { ?>
-		<div id="logistics" class="kit-component logistics start-collapsed">
-			<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
-			<?php 
-			// and now iterate through the logistics fields:
-			foreach ($bz_logistics as $bz_logistics_field_key => $bz_logistics_field_attributes) {
-				if (!empty($customfields[$bz_logistics_field_key])){ ?>
-					<div class="<?php echo $bz_logistics_field_key; ?>">
-						<h4><?php echo $bz_logistics_field_attributes['name'] ?></h4>
-						<?php echo apply_filters('the_content',$customfields[$bz_logistics_field_key][0]);?>
-					</div> <?php
-				} 
-			} // end foreach
-			?>
-		</div>
-	<?php	} ?>
-	<?php 
-	// Iterate through staff tasks if there are any:
-	global $bz_staff_tasks; // from functions.php
-	if(!empty(array_intersect_key($customfields, $bz_staff_tasks))) { ?>
-		<div id="staff-tasks" class="kit-component staff-tasks start-collapsed">
-			<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
-			<?php 
-			// and now iterate through the logistics fields:
-			foreach ($bz_staff_tasks as $bz_staff_tasks_field_key => $bz_staff_tasks_attributes) {
-				if (!empty($customfields[$bz_staff_tasks_field_key])){ ?>
-					<div class="<?php echo $bz_staff_tasks_field_key; ?>">
-						<h4><?php echo $bz_staff_tasks_attributes['name'] ?></h4>
-						<?php echo apply_filters('the_content',$customfields[$bz_staff_tasks_field_key][0]);?>
-					</div> <?php
-				} 
-			} // end foreach
-			?>
-		</div>
-	<?php } ?>
   
   <?php
 	if (!empty($customfields['bz_kit_important'])){ ?>
@@ -291,6 +252,45 @@ get_header(); ?>
 	} 
 	?>
 	
+	<?php 
+	// Iterate through logistics fields if there are any
+	global $bz_logistics; // from functions.php
+	if(!empty(array_intersect_key($customfields, $bz_logistics))) { ?>
+		<div id="logistics" class="kit-component for-staff logistics start-collapsed">
+			<h2 id="logistics-header"><?php echo __('Logistical Information', 'bz');?></h2>
+			<?php 
+			// and now iterate through the logistics fields:
+			foreach ($bz_logistics as $bz_logistics_field_key => $bz_logistics_field_attributes) {
+				if (!empty($customfields[$bz_logistics_field_key])){ ?>
+					<div class="<?php echo $bz_logistics_field_key; ?>">
+						<h4><?php echo $bz_logistics_field_attributes['name'] ?></h4>
+						<?php echo apply_filters('the_content',$customfields[$bz_logistics_field_key][0]);?>
+					</div> <?php
+				} 
+			} // end foreach
+			?>
+		</div>
+	<?php	} ?>
+	<?php 
+	// Iterate through staff tasks if there are any:
+	global $bz_staff_tasks; // from functions.php
+	if(!empty(array_intersect_key($customfields, $bz_staff_tasks))) { ?>
+		<div id="staff-tasks" class="kit-component for-staff staff-tasks start-collapsed">
+			<h2 id="staff-tasks-header"><?php echo __('What Staff Needs To Do', 'bz');?></h2>
+			<?php 
+			// and now iterate through the logistics fields:
+			foreach ($bz_staff_tasks as $bz_staff_tasks_field_key => $bz_staff_tasks_attributes) {
+				if (!empty($customfields[$bz_staff_tasks_field_key])){ ?>
+					<div class="<?php echo $bz_staff_tasks_field_key; ?>">
+						<h4><?php echo $bz_staff_tasks_attributes['name'] ?></h4>
+						<?php echo apply_filters('the_content',$customfields[$bz_staff_tasks_field_key][0]);?>
+					</div> <?php
+				} 
+			} // end foreach
+			?>
+		</div>
+	<?php } ?>
+
 	</main><!-- .site-main -->
 </div><!-- .content-area -->
 
