@@ -10,8 +10,8 @@
  * @link http://codex.wordpress.org/Template_Hierarchy
  *
  * @package WordPress
- * @subpackage Braven_LL_course
- * @since LL course 1.0
+ * @subpackage Braven_LL_Kit
+ * @since LL Kit 1.0
  */
 
 get_header(); ?>

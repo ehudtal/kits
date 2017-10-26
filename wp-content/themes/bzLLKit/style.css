@@ -408,12 +408,12 @@ a:hover {
 }
 .collapsible.collapsed:after,
 .activity header.collapsed:after {
-   -webkit-transform: rotate(-45deg);
-   -moz-transform: rotate(-45deg);
-   -ms-transform: rotate(-45deg);
-   -o-transform: rotate(-45deg);
-   transform: rotate(-45deg);
-   zoom: 1;
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	zoom: 1;
 }
 .activity header:hover,
 .collapsible:hover {
@@ -494,9 +494,9 @@ a:hover {
 	font-style: italic;
 }
 .kit-header .bkg {
-    overflow: hidden;
-	 text-align: center;
-	 vertical-align: middle;	
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;	
 }
 .kit-header .bkg img {
 	-webkit-filter:brightness(50%)  sepia(75%);
@@ -560,16 +560,16 @@ a:hover {
 .sub-duration::before,
 .minutes::before {
 	content: "\1F553";
-  display: inline-block;
-  font-weight: normal;
-  font-style: normal;
-  position: relative;
-  bottom: 1px;
-  margin-right: 2px; 
+	display: inline-block;
+	font-weight: normal;
+	font-style: normal;
+	position: relative;
+	bottom: 1px;
+	margin-right: 2px; 
 }
 .activity .scope {
 	color: #ACACAC;
-  margin-left: 0.5em;
+	margin-left: 0.5em;
 }
 [tabindex="-1"] {
 	outline:none;
