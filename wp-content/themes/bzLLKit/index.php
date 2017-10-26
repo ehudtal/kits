@@ -30,7 +30,7 @@ get_header(); ?>
 			);
 			$courses = new WP_Query( $args );
 			if ( $courses->have_posts() ) { ?>
-				<h2><?php echo __('All courses:', 'bz');?></h2>				
+				<h2><?php echo __('Please select course:', 'bz');?></h2>				
 				<table id="courses">
 					<?php // loop through the courses:
 					while ( $courses->have_posts() ) {
@@ -51,19 +51,6 @@ get_header(); ?>
 									<div class="entry-content">
 										<?php the_excerpt();	?>
 									</div><!-- .entry-content -->
-								
-									<?php
-										edit_post_link(
-											sprintf(
-												/* translators: %s: Name of current post */
-												__( 'Edit<span class="screen-reader-text"> "%s"</span>', 'bz' ),
-												get_the_title()
-											),
-											'<footer class="entry-footer"><span class="edit-link">',
-											'</span></footer><!-- .entry-footer -->'
-										);
-									?>
-								
 								</td><!-- #activity-## -->
 							</tr>
 						<?php

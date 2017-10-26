@@ -361,8 +361,8 @@ a:hover {
 	border-bottom: 1px solid #EEE;
 	padding: 5px 10px 5px 5px;
 }
-#kits td {
-	padding: 10px 10px 10px 0;
+#kits td:not(.visual) {
+	padding: 10px;
 }
 .agenda td {
 	width: 500px;
