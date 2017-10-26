@@ -383,7 +383,11 @@ a:hover {
 	background: #EBF7F7;	
 }
 .activity-outcomes {
-	background: #EBF7F7;
+	margin: 0;
+	font-size: 0.9em;
+}
+.activity-outcomes p {
+	margin: 0.5em 0;
 }
 .activity header:after,
 .collapsible:after {
@@ -423,13 +427,9 @@ a:hover {
 }
 .sub-activities h2,
 .activity > header,
-.activity-outcomes,
 .activity-content > *,
 .activity > footer {
 	padding: 10px;
-	margin: 0;
-}
-.activity-outcomes p {
 	margin: 0;
 }
 .sub-activities > h2 {
@@ -696,9 +696,6 @@ a:hover {
 	}
 	.activity-header:after {
 		color: #DDD;	
-	}
-	.activity-outcomes p {
-		margin: 0;
 	}
 	a[href^="http"] {
 		color: inherit;

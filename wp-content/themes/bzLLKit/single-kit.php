@@ -252,8 +252,9 @@ get_header(); ?>
 										<?php echo $bz_scopes[$activity_scope]; // get title by key. $bz_scopes is defined in functions.php ?>
 									</span>
 								<?php } // end if scope ?>
+						<div class="activity-outcomes"><?php echo apply_filters('the_content', $activity_post->post_excerpt); ?></div>
 					</header>
-					<div class="activity-outcomes"><?php echo apply_filters('the_content', $activity_post->post_excerpt); ?></div>
+					
 					<div class="activity-content"><?php echo apply_filters('the_content', $activity_post->post_content); ?></div>
 					<?php if ( current_user_can( 'edit_posts' ) ) { ?>
 						<footer class="activity-footer">
