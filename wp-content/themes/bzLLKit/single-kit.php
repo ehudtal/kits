@@ -10,9 +10,15 @@
 // Reset because we had to run a sub-query to form the title:
 wp_reset_query();
 
-// set up a place to store activities so we don't have to query the DB more than once.
+// Set up a place to store activities so we don't have to query the DB more than once.
 $activity_posts = array();
 $full_activities ="";
+
+// Kit content varies based on Course (e.g. LL start time);
+// Get the Course from the URL query's passed param.
+global $course;
+global $course_custom_fields;
+
 
 get_header(); ?>
 <div id="primary" class="content-area">
@@ -85,9 +91,11 @@ get_header(); ?>
 			if ($activity_id) $activity_posts[] = get_post($activity_id);
 		}
 		if (!empty($activity_posts)) {
-		
+			// Figure out start time based on referring course:
+			$coursestt = ($course_custom_fields['bz_course_default_start_time']);
+			$stt = ($coursestt[0]) ? $coursestt[0] : '18:00';
 			// Init generating the agenda timetable
-			$dt = DateTime::createFromFormat('H:i', '18:00'); 
+			$dt = DateTime::createFromFormat('H:i', $stt); 
 				// of course at some point we should make this NOT HARDCODED! e.g. draw the start time from the CMS or LMS...
 			$dtadjust = get_post_custom_values('bz_kit_start_time_adjust', $post->ID);
 			if ($dtadjust[0] < 0) {
