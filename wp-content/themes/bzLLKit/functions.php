@@ -449,7 +449,7 @@ function bz_register_course_cpt() {
 	$args = array(
 		'label'                 => __( 'Course', 'bz' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', ),
+		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields'),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,
@@ -756,6 +756,20 @@ function bz_mce_before_init_insert_formats( $init_array ) {
 // Attach callback to 'tiny_mce_before_init' 
 add_filter( 'tiny_mce_before_init', 'bz_mce_before_init_insert_formats' );
 
+// Add a course variable to pass to kits:
+function bz_parameter_queryvars( $qvars ) {
+	$qvars[] = 'bzcourse';
+	return $qvars;
+}
+add_filter('query_vars', 'bz_parameter_queryvars' );
+function bz_add_rewrite_rules($rules) {
+	$new_rule = array('kit/([^/]+)/(bzcourse)/?$' => 'index.php?bzcourse=$matches[1]');
+	$rules = $new_rule + $rules;
+	return $rules;
+}
+ 
+// hook add_rewrite_rules function into rewrite_rules_array
+add_filter('rewrite_rules_array', 'add_rewrite_rules');
 
 /* Generate a prefix for LL titles to show week number: 
 

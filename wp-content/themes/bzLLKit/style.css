@@ -314,7 +314,8 @@ th,
 .activity .scope,
 .sub-duration,
 .core::before,
-#kits .visual {
+#kits .visual,
+#course-selector * {
 	font-family: "TradeGothicNo.20-CondBold", "Oswald", "Arial Narrow", sans-serif;
 	text-transform: uppercase;
 	line-height: normal;
@@ -573,6 +574,23 @@ a:hover {
 }
 [tabindex="-1"] {
 	outline:none;
+}
+
+.site-title {
+	text-align: right;
+}
+
+#course-selector {
+	padding: 0 10px 0 0;
+}
+
+#course-selector span,
+#course-selector select, {
+	font-size: 0.75em;
+}
+
+#course-selector span {
+	color: #FFF;
 }
 
 #footer {

@@ -9,6 +9,23 @@ get_header(); ?>
     <main id="main" class="site-main" role="main">
       <h1><?php the_title();?></h1>
       <p><?php the_excerpt();?></p>
+      <ul>
+        <li><?php echo __('Learning Labs start at:', 'bz');?> 
+          <?php 
+            $starttime = get_post_custom_values('bz_course_default_start_time', $post->ID);
+            $starttime = ($starttime[0]) ? $starttime[0] : '18:00';
+            echo date('g:i a', strtotime($starttime));
+          ?>
+        </li>
+        <li><?php echo __('Sepcial events start at:', 'bz');?>  
+          <?php 
+
+            $eventtime = get_post_custom_values('bz_course_event_start_time', $post->ID);
+            $eventtime = ($eventtime[0]) ? $eventtime[0] : '9:00';
+            echo date('g:i a', strtotime($eventtime));
+          ?>
+        </li>
+      </ul>
       <?php
 
       // Set up a var to count non-workshop kits for numbering purposes:
@@ -48,7 +65,8 @@ get_header(); ?>
               if ($kit_post->post_status == 'publish') { 
                 // Cycle through the kits: 
 
-                $kit_link = get_permalink($kit_post->ID);
+                $kit_link = get_permalink($kit_post->ID).'?bzcourse='.$post->post_name; 
+
                 ?>
                 
                 <tr id="kit-<?php echo $kit_post->ID; ?>" <?php //echo get_post_class($kit_post->ID); ?>>
