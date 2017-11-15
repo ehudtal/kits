@@ -578,6 +578,11 @@ a:hover {
 
 .site-title {
 	text-align: right;
+	padding-top: 10px;
+}
+
+.site-title > * {
+	display: inline;
 }
 
 #course-selector {
@@ -591,6 +596,20 @@ a:hover {
 
 #course-selector span {
 	color: #FFF;
+}
+
+#courses,
+#courses tbody,
+#courses tr,
+#course img {
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-collapse: collapse;
+}
+
+#courses .desc {
+	padding-left: 20px;
 }
 
 #footer {
