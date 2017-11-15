@@ -9,6 +9,8 @@ get_header(); ?>
     <main id="main" class="site-main" role="main">
       <h1><?php the_title();?></h1>
       <p><?php the_excerpt();?></p>
+      
+      <?php /*
       <ul>
         <li><?php echo __('Learning Labs start at:', 'bz');?> 
           <?php 
@@ -26,6 +28,8 @@ get_header(); ?>
           ?>
         </li>
       </ul>
+      */ ?>
+      
       <?php
 
       // Set up a var to count non-workshop kits for numbering purposes:
