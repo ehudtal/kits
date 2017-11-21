@@ -539,7 +539,7 @@ a:hover {
 	margin-left: -10px;
 }
 .core::before {
-  content: "CORE ACTIVITY";
+  content: "CORE ACTIVITY\A";
   color: #EB3B46;
 }
 .activity .duration,
@@ -578,7 +578,7 @@ a:hover {
 
 .site-title {
 	text-align: right;
-	padding-top: 10px;
+	padding: 10px 1.5em;
 }
 
 .site-title > * {
@@ -653,6 +653,13 @@ a:hover {
 	right: 0;
 	bottom: 0;
 }
+.page-contents {
+	padding: 2em;
+}
+.page-contents .activity {
+	border-top: none;
+}
+
 @media screen and (min-width: 769px) {
 	.site-inner {
 		width: 768px;	

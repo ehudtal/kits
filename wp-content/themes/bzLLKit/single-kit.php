@@ -92,7 +92,7 @@ get_header(); ?>
 		}
 		if (!empty($activity_posts)) {
 			// Figure out start time based on referring course:
-			$stt = ($course_custom_fields['bz_course_default_start_time'][0]) ? $course_custom_fields['bz_course_default_start_time'][0] : '18:00';
+			$stt = (!empty($course_custom_fields['bz_course_default_start_time'][0])) ? $course_custom_fields['bz_course_default_start_time'][0] : '18:00';
 			// Init generating the agenda timetable
 			$dt = DateTime::createFromFormat('H:i', $stt); 
 				// of course at some point we should make this NOT HARDCODED! e.g. draw the start time from the CMS or LMS...
