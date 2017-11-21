@@ -487,6 +487,16 @@ a:hover {
 	margin-bottom: 7px;
 	color: #FFF;	
 }
+
+.no-bkg-img {
+	background: #9AD7D7;
+	height: 150px;
+}
+
+.no-bkg {
+
+}
+
 .kit-masthead h1,
 .kit-masthead p {
 	margin:0;	
@@ -498,6 +508,7 @@ a:hover {
 	overflow: hidden;
 	text-align: center;
 	vertical-align: middle;	
+	min-height: 100px;
 }
 .kit-header .bkg img {
 	-webkit-filter:brightness(50%)  sepia(75%);
@@ -654,7 +665,7 @@ a:hover {
 	bottom: 0;
 }
 .page-contents {
-	padding: 2em;
+	padding: 2em 10px;
 }
 .page-contents .activity {
 	border-top: none;

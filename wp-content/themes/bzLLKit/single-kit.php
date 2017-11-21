@@ -24,11 +24,13 @@ get_header(); ?>
 <div id="primary" class="content-area">
 	<main id="main" class="site-main" role="main">
 		<header class="kit-header">
-			<div class="bkg">
-				<?php if(has_post_thumbnail()) { 
-					the_post_thumbnail('header');
-				} ?>
-			</div>
+			<?php if(has_post_thumbnail()) {  ?>
+				<div class="bkg">
+					<?php the_post_thumbnail('header');	?>
+				</div>
+			<?php } else { ?>
+				<div class="no-bkg-img">&nbsp;</div>
+			<?php } ?>
 			<div class="kit-masthead">
 				<h1>
 					<?php the_title(); ?>
