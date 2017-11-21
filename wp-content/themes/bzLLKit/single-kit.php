@@ -24,11 +24,13 @@ get_header(); ?>
 <div id="primary" class="content-area">
 	<main id="main" class="site-main" role="main">
 		<header class="kit-header">
-			<div class="bkg">
-				<?php if(has_post_thumbnail()) { 
-					the_post_thumbnail('header');
-				} ?>
-			</div>
+			<?php if(has_post_thumbnail()) {  ?>
+				<div class="bkg">
+					<?php the_post_thumbnail('header');	?>
+				</div>
+			<?php } else { ?>
+				<div class="no-bkg-img">&nbsp;</div>
+			<?php } ?>
 			<div class="kit-masthead">
 				<h1>
 					<?php the_title(); ?>
@@ -92,7 +94,7 @@ get_header(); ?>
 		}
 		if (!empty($activity_posts)) {
 			// Figure out start time based on referring course:
-			$stt = ($course_custom_fields['bz_course_default_start_time'][0]) ? $course_custom_fields['bz_course_default_start_time'][0] : '18:00';
+			$stt = (!empty($course_custom_fields['bz_course_default_start_time'][0])) ? $course_custom_fields['bz_course_default_start_time'][0] : '18:00';
 			// Init generating the agenda timetable
 			$dt = DateTime::createFromFormat('H:i', $stt); 
 				// of course at some point we should make this NOT HARDCODED! e.g. draw the start time from the CMS or LMS...

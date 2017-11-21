@@ -30,7 +30,6 @@ global $course_custom_fields;
 <div id="page" class="site">
 	<div class="site-inner">
 		<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'bz' ); ?></a>
-
 		<header id="masthead" class="site-header" role="banner">
 			<div class="site-header-main">
 			
@@ -78,6 +77,7 @@ global $course_custom_fields;
 										}
 									?>
 								</form>
+								<a href="/help" target="_blank"><?php echo __('Help', 'bz');?></a>
 							<?php } // END if ('kit' == $post->post_type) ?>
 						</div><!-- .site-title -->
 					<?php } // END if ( is_front_page() && is_home() ) else ?>
@@ -88,3 +88,4 @@ global $course_custom_fields;
 		</header><!-- .site-header -->
 
 		<div id="content" class="site-content">
+								
