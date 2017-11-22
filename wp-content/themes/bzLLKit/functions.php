@@ -761,14 +761,13 @@ function bz_parameter_queryvars( $qvars ) {
 	return $qvars;
 }
 add_filter('query_vars', 'bz_parameter_queryvars' );
-function bz_add_rewrite_rules($rules) {
-	$new_rule = array('kit/([^/]+)/(bzcourse)/?$' => 'index.php?bzcourse=$matches[1]');
-	$rules = $new_rule + $rules;
-	return $rules;
+
+// Allow us to pass bzcourse=blah as a query parameter.
+function bz_add_rewrite_rules(){
+    add_rewrite_rule('kit/([^/]+)/(bzcourse)/?$', 'index.php?bzcourse=$matches[1]');
 }
- 
-// hook add_rewrite_rules function into rewrite_rules_array
-add_filter('rewrite_rules_array', 'add_rewrite_rules');
+add_action('init', 'bz_add_rewrite_rules');
+
 
 /* Generate a prefix for LL titles to show week number: 
 
