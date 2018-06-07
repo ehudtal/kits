@@ -233,6 +233,15 @@ get_header(); ?>
 	?>
 	
 	<?php
+	if (!empty($customfields['bz_kit_how_to_prep'])){ ?>
+		<div class="kit-component how-to-prep start-collapsed">
+			<h2><?php echo __('How to Prepare', 'bz'); ?></h2>
+			<?php echo apply_filters('the_content',$customfields['bz_kit_how_to_prep'][0]);?>
+		</div> <?php
+	} 
+	?>
+
+	<?php
 	
 	if (!empty($materials)) { ?>
 		<div class="kit-component materials start-collapsed">
