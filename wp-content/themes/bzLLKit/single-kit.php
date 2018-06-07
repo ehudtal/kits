@@ -128,17 +128,19 @@ get_header(); ?>
 				$start_time_string = $eventtime;
 			}
 
-			// Use a custom start time per Course, if one is defined in the Kit (format is slug=HH:MM;slug2=HH:MM):
+			// Use a custom start time per Course, if one is defined in the Kit (format is: course-slug=HH:MM;other-course-slug2=HH:MM):
 
-			$custom_times_strings = explode(';', get_post_custom_values('bz_kit_custom_start_times', $post->ID)[0] );
-			foreach ($custom_times_strings as $ctv) {
-				// Explode the string so we can use its parts as a key=>value pair:
-				$ctv = explode('=', $ctv);
-				if( isset($ctv[0]) ) {
-					$custom_times[$ctv[0]] = $ctv[1];
+			$custom_times_strings = get_post_custom_values('bz_kit_custom_start_times', $post->ID)[0];
+			if ($custom_times_strings) {
+				$custom_times_strings = explode(';', $custom_times_strings);
+				foreach ($custom_times_strings as $ctv) {
+					// Explode the string so we can use its parts as a key=>value pair:
+					$ctv = explode('=', $ctv);
+					if( isset($ctv[0]) ) {
+						$custom_times[$ctv[0]] = $ctv[1];
+					}
 				}
 			}
-
 			if ( isset($custom_times[$course]) ) {
 				$start_time_string = $custom_times[$course];
 			}
