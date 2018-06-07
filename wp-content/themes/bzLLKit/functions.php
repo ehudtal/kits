@@ -854,3 +854,31 @@ function bz_kit_title_prefix($title) {
 add_filter('the_title', 'bz_kit_title_prefix');
 
 /**/
+
+/* Get info on user so we can personalize the content */
+
+/**
+    fetches the user course ids from Canvas
+    you should call this function just once for an email address,
+    then cache it in a variable or even in the user $_SESSION, since
+    reading it each time can be slow.
+
+    Then just use something like `if(in_array(whatever, $that_list))` where
+    whatever is the course ids you are interested in to do your customization.
+
+    TEST EXAMPLE: print_r( bz_get_user_courses(wp_get_current_user()->user_email) );
+*/
+function bz_get_user_courses($email) {
+    $ch = curl_init();
+    // Change stagingportal to portal here when going live!
+    curl_setopt($ch, CURLOPT_URL, 'https://stagingportal.bebraven.org/bz/courses_for_email?email=' . urlencode($email));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $answer = curl_exec($ch);
+    curl_close($ch);
+
+    // trim off any cross-site get padding, if present,
+    // keeping just the json object
+    $answer = substr($answer, strpos($answer, "{"));
+    $obj = json_decode($answer, TRUE);
+    return $obj["course_ids"];
+}
