@@ -17,8 +17,12 @@
 get_header(); ?>
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
+			<?php 
+			echo "This user should be able to access the following courses:";
+			echo '<ul>';
+			$user_courses = bz_get_user_courses(wp_get_current_user()->user_email);
+			foreach ($user_courses as $user_course) echo $user_course.' ';			
 
-			<?php
 			// List the courses:
 			$args = array (
 				'post_type'              => array( 'course' ),
