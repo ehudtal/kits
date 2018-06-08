@@ -51,7 +51,7 @@ function bz_setup() {
 	/*
 	 * Make theme available for translation.
 	 * Translations can be filed at WordPress.org. See: https://translate.wordpress.org/projects/wp-themes/bz
-	 * If you're building a theme based on Braven LL Kit, use a find and replace
+	 * If you're building a theme based on Braven LL Kit, use a find and replacec
 	 * to change 'bz' to the name of your theme in all the template files
 	 */
 	//load_theme_bz( 'bz' );
@@ -588,6 +588,17 @@ function bz_meta_boxes( $meta_boxes ) {
 		),
 	);
 	$meta_boxes[] = array(
+		'title'      => __( 'Course Attributes', 'bz' ),
+		'post_types' => 'course',
+		'fields'     => array(
+			array(
+				'id'   => 'bz_course_attributes_portal_id',
+				'name' => __( 'Portal ID of this Course', 'bz' ),
+				'type' => 'number',
+			),
+		),
+	);
+	$meta_boxes[] = array(
 		'title'      => __( 'Kit Attributes', 'bz' ),
 		'post_types' => array ('kit'),
 		'fields'     => array(
@@ -887,3 +898,30 @@ function bz_get_user_courses($email) {
     $obj = json_decode($answer, TRUE);
     return $obj["course_ids"];
 }
+
+/* Add wrapping shortcodes to allow personalizing content by course.
+   Attributes include a comma-separated list of Course slugs and an indication of whether this is a block or inline elemnet. 
+
+   EXAMPLE OF INLINE CONTENT: As a fellow [course-specific scope="inline" courses="sjsu, run"]at one of our first two sites[/course-specific] you're expected to do great.
+
+   EXAMPLE OF BLOCK CONTENT:
+   [course-specific courses="run"]<h2>Here's what to do at RU-N:</h2>
+   <p>blah blah.</p>
+   [/course-specific]
+
+ */
+function bz_personalize_content_by_course( $atts, $content = null ) {
+	global $course;
+    $a = shortcode_atts( array(
+    	// add a default attribute value: 
+        'courses' => '',
+        'scope' => 'block',
+    ), $atts );
+
+    // See if the current course is in the attributes (treat it as a comma-separated list, and strip any spaces so whoever writes the list can use either "course1,course2" or "course1, course2")
+    if ( in_array( $course, explode(',', str_replace(' ', '', $a['courses']) ) ) ) {
+    	return '<'.$a['scope'].' class="bz-course-specific">'.$content.'</'.$a['scope'].'>';
+    }
+}
+
+add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
