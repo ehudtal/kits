@@ -788,6 +788,13 @@ function bz_mce_before_init_insert_formats( $init_array ) {
 			'wrapper' => true,
 		), 
 		array(  
+			'title' => 'LC Support',  
+			'block' => 'div',  
+			'classes' => 'core support',
+			'exact' => true,
+			'wrapper' => true,
+		), 
+		array(  
 			'title' => 'Sub-activity duration',  
 			'block' => 'div',  
 			'classes' => 'sub-duration',

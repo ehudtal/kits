@@ -51,12 +51,13 @@ get_header(); ?>
 
 			$courses = new WP_Query( $args );
 			
-			if ( $courses->found_posts == 1 ) {
+			if ( $courses->found_posts === 1 ) {
 				// If the user only has one course, might as well 
 				// redirect them to it:
 				$courses->the_post();
 				?>
 				<script>
+					// Redirecting to single course: 
 					location.replace("<?php the_permalink(); ?>");
 				</script>
 				<?php

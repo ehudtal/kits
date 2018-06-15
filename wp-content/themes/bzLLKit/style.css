@@ -558,9 +558,16 @@ a:hover {
 	padding: 20px;
 	margin-left: -10px;
 }
+.activity .core.support {
+	border-color: #000;
+}
 .core::before {
-  content: "CORE ACTIVITY\A";
-  color: #EB3B46;
+	content: "CORE ACTIVITY\A";
+	color: #EB3B46;
+}
+.core.support::before {
+	content: "COACH SUPPORT\A";
+	color: #000;
 }
 .activity .duration,
 .activity .scope {
