@@ -932,3 +932,9 @@ function bz_personalize_content_by_course( $atts, $content = null ) {
 }
 
 add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
+
+/* Magic fields importer -- to show coaches what their fellows answered on the Portal: */
+
+include('inc/bz-magic-fields.php');
+
+

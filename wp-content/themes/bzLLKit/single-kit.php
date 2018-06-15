@@ -230,8 +230,20 @@ get_header(); ?>
 			<?php echo apply_filters('the_content',$customfields['bz_kit_prework'][0]);?>
 		</div> <?php
 	} 
+	// Also show this Coach's Fellows responses to some questions in the Portal module: 
+	$cohort_module_answers = bz_get_cohort_magic_fields("admin@beyondz.org", ['dyc-industry-1', 'dyc-industry-2', 'dyc-industry-freeform-other']);
+	if (isset($cohort_module_answers)) {
+		foreach($cohort_module_answers as $question => $fanswers) {
+			echo '<strong>'.$question.'</strong><br/>';
+			echo '<ul>';
+			foreach ($fanswers as $fname => $fanswer) {
+				echo '<li>'.$fname.': '.$fanswer.'</li>';
+			}
+			echo '</ul>';
+		}
+	}
 	?>
-	
+
 	<?php
 	if (!empty($customfields['bz_kit_how_to_prep'])){ ?>
 		<div class="kit-component how-to-prep start-collapsed">
