@@ -884,10 +884,10 @@ add_filter('the_title', 'bz_kit_title_prefix');
 
     TEST EXAMPLE: print_r( bz_get_user_courses(wp_get_current_user()->user_email) );
 */
-function bz_get_user_courses($email) {
+function bz_get_user_courses($lc_email) {
     $ch = curl_init();
     // Change stagingportal to portal here when going live!
-    curl_setopt($ch, CURLOPT_URL, 'https://stagingportal.bebraven.org/bz/courses_for_email?email=' . urlencode($email));
+    curl_setopt($ch, CURLOPT_URL, 'https://stagingportal.bebraven.org/bz/courses_for_email?email=' . urlencode($lc_email));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $answer = curl_exec($ch);
     curl_close($ch);
@@ -898,6 +898,42 @@ function bz_get_user_courses($email) {
     $obj = json_decode($answer, TRUE);
     return $obj["course_ids"];
 }
+
+/* Get cohort's magic field answers: */
+/**
+	$magic_field_names is an array.
+
+	Need to define CANVAS_TOKEN defined in wp-config.php.
+
+	Returns an object with field names as keys, an object with student names as keys and values as, well, values.
+
+	example use:
+	print_r(get_cohort_magic_fields("admin@beyondz.org", ['dyc-industry-1', 'dyc-industry-2', 'dyc-industry-freeform-other']);
+*/
+function get_cohort_magic_fields($lc_email, $magic_field_names) {
+
+	$names_url = "";
+	foreach($magic_field_names as $name)
+		$names_url .= "&fields[]=" . urlencode($name);
+
+	$ch = curl_init();
+	$url = 'https://stagingportal.bebraven.org/bz/magic_fields_for_cohort?email=' . urlencode($lc_email) . '&access_token=' . urlencode(CANVAS_TOKEN) . $names_url;
+	// Change stagingportal to portal here when going live!
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$answer = curl_exec($ch);
+	curl_close($ch);
+
+	// trim off any cross-site get padding, if present,
+	// keeping just the json object
+	$answer = substr($answer, strpos($answer, "{"));
+	echo $answer;
+	echo $url;
+	$obj = json_decode($answer, TRUE);
+	return $obj["answers"];
+}
+
+
 
 /* Add wrapping shortcodes to allow personalizing content by course.
    Attributes include a comma-separated list of Course slugs and an indication of whether this is a block or inline elemnet. 
@@ -925,3 +961,5 @@ function bz_personalize_content_by_course( $atts, $content = null ) {
 }
 
 add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
+
+
