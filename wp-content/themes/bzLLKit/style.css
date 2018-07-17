@@ -58,7 +58,8 @@ abbr[title] {
 }
 
 b,
-strong {
+strong,
+dt {
 	font-weight: 700;
 }
 

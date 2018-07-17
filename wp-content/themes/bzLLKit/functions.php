@@ -653,7 +653,7 @@ function bz_meta_boxes( $meta_boxes ) {
 			),
 			array(
 				'id'   => 'bz_kit_prework',
-				'name' => __( 'Fellows&#39;s Pre-work (please use bullet list)', 'bz' ),
+				'name' => __( 'Fellows&#39;s Pre-work<ul><li>Please use bullet list.</li><li>To show the cohort&#39;s answers from the module use this shortcode (at least one magic field ID is required, use commas to add more): <code>[cohort-answers="place-magic-field-id-here, optioanlly-another-one-here"]</code></li></ul>', 'bz' ),
 				'type' => 'wysiwyg',
 			),
 			array(
@@ -942,7 +942,7 @@ function bz_show_cohort_magic_fields( $atts, $content = null) {
 
 	$current_user_email = wp_get_current_user()->user_email;
 	// FOR TESTING:
-	$current_user_email = 'aalcones@fb.com';
+	// $current_user_email = 'aalcones@fb.com';
 
     // Let's see if the kit's designer has provided a list of magic fields as an attribute, and strip any spaces so the list can use either "mf1,mf2" or "mf1, mf2")
     
@@ -952,9 +952,9 @@ function bz_show_cohort_magic_fields( $atts, $content = null) {
     $str_to_return = '';
 
     if (!empty($answers)) {
-    	$str_to_return .= '<h3>'.__('Fellow Answers from Online Module', 'bz').'</h3>';
+    	$str_to_return .= '<h3>'.__('Fellows&#39; Answers from Online Module', 'bz').'</h3>';
 	    foreach ($answers as $question => $answer) {
-	    	$str_to_return .= '<h4>'.$question.'</h4><dl>';
+	    	$str_to_return .= '<h4 class="bz-question-meta">'.$question.'</h4><dl>';
 	    	if (!empty($answer)) {
 	    		foreach ($answer as $fellow => $fanswer) {
 	    			$str_to_return .= '<dt>'.$fellow.'</dt>';
