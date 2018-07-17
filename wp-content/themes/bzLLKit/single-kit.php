@@ -23,14 +23,6 @@ global $course_custom_fields;
 get_header(); ?>
 <div id="primary" class="content-area">
 	<main id="main" class="site-main" role="main">
-
-<?php
-
-// Test magic fields dump:
-print_r(get_cohort_magic_fields("admin@beyondz.org", ['dyc-industry-1', 'dyc-industry-2', 'dyc-industry-freeform-other']));
-
-?>
-
 		<header class="kit-header">
 			<?php if(has_post_thumbnail()) {  ?>
 				<div class="bkg">

@@ -910,7 +910,7 @@ function bz_get_user_courses($lc_email) {
 	example use:
 	print_r(get_cohort_magic_fields("admin@beyondz.org", ['dyc-industry-1', 'dyc-industry-2', 'dyc-industry-freeform-other']);
 */
-function get_cohort_magic_fields($lc_email, $magic_field_names) {
+function bz_get_cohort_magic_fields($lc_email, $magic_field_names) {
 
 	$names_url = "";
 	foreach($magic_field_names as $name)
@@ -927,12 +927,48 @@ function get_cohort_magic_fields($lc_email, $magic_field_names) {
 	// trim off any cross-site get padding, if present,
 	// keeping just the json object
 	$answer = substr($answer, strpos($answer, "{"));
-	echo $answer;
-	echo $url;
 	$obj = json_decode($answer, TRUE);
 	return $obj["answers"];
 }
 
+/* Add shortcode so we can embed cohort answers into a kit */
+function bz_show_cohort_magic_fields( $atts, $content = null) {
+
+    $a = shortcode_atts( array(
+    	// add a default attribute value: 
+        'fields' => array(),
+    ), $atts );
+
+
+	$current_user_email = wp_get_current_user()->user_email;
+	// FOR TESTING:
+	$current_user_email = 'aalcones@fb.com';
+
+    // Let's see if the kit's designer has provided a list of magic fields as an attribute, and strip any spaces so the list can use either "mf1,mf2" or "mf1, mf2")
+    
+    $mfields = explode(',', str_replace(' ', '', $a['fields']) );
+    $answers = bz_get_cohort_magic_fields($current_user_email, $mfields);
+
+    $str_to_return = '';
+
+    if (!empty($answers)) {
+    	$str_to_return .= '<h3>'.__('Fellow Answers from Online Module', 'bz').'</h3>';
+	    foreach ($answers as $question => $answer) {
+	    	$str_to_return .= '<h4>'.$question.'</h4><dl>';
+	    	if (!empty($answer)) {
+	    		foreach ($answer as $fellow => $fanswer) {
+	    			$str_to_return .= '<dt>'.$fellow.'</dt>';
+	    			$str_to_return .= ($fanswer) ? '<dd>'.$fanswer.'</dd>' : '<dd class="na">'.__('N/A', 'bz').'</dd>';
+	    		}
+	    	}
+	    }
+	    $str_to_return .= '</dl>';
+	}
+    return $str_to_return;
+
+}
+
+add_shortcode( 'cohort-answers', 'bz_show_cohort_magic_fields' );
 
 
 /* Add wrapping shortcodes to allow personalizing content by course.
@@ -961,5 +997,6 @@ function bz_personalize_content_by_course( $atts, $content = null ) {
 }
 
 add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
+
 
 
