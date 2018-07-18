@@ -952,9 +952,8 @@ function bz_show_cohort_magic_fields( $atts, $content = null) {
     $str_to_return = '';
 
     if (!empty($answers)) {
-    	$str_to_return .= '<h3>'.__('Fellows&#39; Answers from Online Module', 'bz').'</h3>';
 	    foreach ($answers as $question => $answer) {
-	    	$str_to_return .= '<h4 class="bz-question-meta">'.$question.'</h4><dl>';
+	    	$str_to_return .= '<div class="mf-answers"><h4 class="bz-question-meta">'.$question.'</h4><dl class="mf-answer">';
 	    	if (!empty($answer)) {
 	    		foreach ($answer as $fellow => $fanswer) {
 	    			$str_to_return .= '<dt>'.$fellow.'</dt>';
@@ -962,7 +961,7 @@ function bz_show_cohort_magic_fields( $atts, $content = null) {
 	    		}
 	    	}
 	    }
-	    $str_to_return .= '</dl>';
+	    $str_to_return .= '</dl></div>';
 	}
     return $str_to_return;
 
