@@ -1002,7 +1002,15 @@ add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
 */
 function bz_attendance($atts, $content = null) {
     global $course;
-    return "<iframe onload=\"this.style.height = this.contentWindow.document.body.scrollHeight + 'px';\" src=\"/attendance.php?course_name=".htmlentities($course)."&amp;event_name=".htmlentities(atts["event"])."></iframe>";
+
+    return "<iframe onload=\"
+        this.style.height = (30 + this.contentWindow.document.body.scrollHeight) + 'px';
+        this.style.border = 'none';
+        this.style.width = '100%';
+        this.style.padding = '0px';
+        var magic = this;
+        setTimeout(function() { magic.onload(); }, 1000);
+    \" src=\"/attendance.php?course_name=".htmlentities($course)."&amp;event_name=".htmlentities($atts["event"])."\"></iframe>";
 }
 
 add_shortcode( 'take-attendance', 'bz_attendance' );
