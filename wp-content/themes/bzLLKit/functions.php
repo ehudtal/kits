@@ -997,5 +997,12 @@ function bz_personalize_content_by_course( $atts, $content = null ) {
 
 add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
 
+/*
+	[take-attendance event="LL1"][/take-attendance]
+*/
+function bz_attendance($atts, $content = null) {
+    global $course;
+    return "<iframe onload=\"this.style.height = this.contentWindow.document.body.scrollHeight + 'px';\" src=\"/attendance.php?course_name=".htmlentities($course)."&amp;event_name=".htmlentities(atts["event"])."></iframe>";
+}
 
-
+add_shortcode( 'take-attendance', 'bz_attendance' );
