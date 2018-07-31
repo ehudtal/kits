@@ -1,4 +1,10 @@
 <?php
+/*
+	TODO
+		let lc's see history (go to the grid view)
+		let staff substitute for lc
+		show multiple columns for one-on-one convos
+*/
 
 $WP_CONFIG = array();
 
@@ -115,6 +121,29 @@ function get_event_info_by_name($course_id, $event_name) {
 	return get_event_info_by_name($course_id, $event_name);
 }
 
+function get_all_events($course_id) {
+	global $pdo;
+
+	$statement = $pdo->prepare("
+		SELECT
+			id, name, event_time, course_id
+		FROM
+			attendance_events
+		WHERE
+			course_id = ?
+	");
+
+	$result = array();
+	$statement->execute(array($course_id));
+	while($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+		$result[] = $row;
+	}
+
+	return $result;
+}
+
+
+
 function create_event($course_id, $event_name) {
 	global $pdo;
 
@@ -133,6 +162,9 @@ function create_event($course_id, $event_name) {
 
 
 function load_student_status($event_id, $students) {
+	if(count($students) == 0)
+		return array();
+
 	global $pdo;
 
 	$statement = $pdo->prepare("
@@ -266,13 +298,53 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		return $obj["answers"];
 	}
 
+	function get_cohort_lcs($course_id) {
+		if(0)
+		return array(
+			array(
+				"name" => "Stephanie Baeza",
+				"email" => "sbaeza88@gmail.com"
+			),
+			array(
+				"name" => "Elymae Cedeno",
+				"email" => "elymaec@gmail.com"
+			)
+		);
+		global $WP_CONFIG;
+
+		$ch = curl_init();
+		$url = 'https://stagingportal.bebraven.org/bz/course_cohort_information?course_ids[]='.((int) $course_id). '&access_token=' . urlencode($WP_CONFIG["CANVAS_TOKEN"]);
+		// Change stagingportal to portal here when going live!
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$answer = curl_exec($ch);
+		curl_close($ch);
+
+		// trim off any cross-site get padding, if present,
+		// keeping just the json object
+		$answer = substr($answer, strpos($answer, "{"));
+		$obj = json_decode($answer, TRUE);
+
+		$sections = $obj["courses"][0]["sections"];
+		$lcs = array();
+		foreach($sections as $section) {
+			foreach($section["enrollments"] as $enrollment) {
+				if($enrollment["type"] == "TaEnrollment")
+					$lcs[] = $enrollment;
+			}
+		}
+
+		return $lcs;
+	}
+
 	if(isset($_POST["operation"])) {
 		set_attendance($_POST["event_id"], $_POST["student_name"], $_POST["present"]);
 		exit;
 	}
 
 
-	$lc_email = $_SESSION["user"];
+	$is_staff = strpos($_SESSION["user"], "@bebraven.org") !== FALSE || strpos($_SESSION["user"], "@beyondz.org") !== FALSE;
+	$lc_email = ($is_staff && isset($_REQUEST["lc"]) && $_REQUEST["lc"] != "") ? $_REQUEST["lc"] : $_SESSION["user"];
 	$course_id = 0;
 	if(isset($_GET["course_id"]))
 		$course_id = $_GET["course_id"];
@@ -290,19 +362,95 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		}
 	}
 
+	if($course_id == 0) {
+		header("Location: attendance.php?course_name=nlu");
+		exit;
+	}
+
 	$event_id = 0;
 	$event_name = "";
 	if(isset($_GET["event_id"])) {
 		$event_id = $_GET["event_id"];
 		$event_name = get_event_info($event_id)["name"];
+		$single_event = true;
 	} else if(isset($_GET["event_name"])) {
 		$event_name = $_GET["event_name"];
 		$event_id = get_event_info_by_name($course_id, $event_name)["id"];
-
+		$single_event = true;
+	} else {
+		$single_event = false;
 	}
 
-	$student_list = array_keys(get_cohort_magic_fields($course_id, $lc_email, ['student_list'])["student_list"]);
-	$student_status = load_student_status($event_id, $student_list);
+	if(!isset($_GET["download"])) {
+		$student_list = array_keys(get_cohort_magic_fields($course_id, $lc_email, ['student_list'])["student_list"]);
+		$student_status = array();
+		if($event_id)
+			$student_status[$event_id] = load_student_status($event_id, $student_list);
+		else {
+			$events = get_all_events($course_id);
+			foreach($events as $event) {
+				$student_status[$event["id"]] = load_student_status($event["id"], $student_list);
+			}
+		}
+	}
+
+	if($is_staff && isset($_GET["download"])) {
+		$fp = fopen("php://output", "w");
+		ob_start();
+
+		$events = get_all_events($course_id);
+		$headers = array("Student", "Course ID", "LC Email");
+		foreach($events as $event)
+			$headers[] = $event["name"];
+
+		fputcsv($fp, $headers);
+
+		$lcs = get_cohort_lcs($course_id);
+		foreach($lcs as $lc) {
+			$lc_email = $lc["email"];
+			$student_list = array_keys(get_cohort_magic_fields($course_id, $lc_email, ['student_list'])["student_list"]);
+			$student_status = array();
+			foreach($events as $event) {
+				$student_status[$event["id"]] = load_student_status($event["id"], $student_list);
+			}
+			foreach($student_list as $student) {
+				$data = array();
+				$data[] = $student;
+				$data[] = $course_id;
+				$data[] = $lc_email;
+				foreach($events as $event) {
+					$data[] = $student_status[$event["id"]][$student] ? "true" : "false";
+				}
+
+				fputcsv($fp, $data);
+			}
+		}
+
+		$string = ob_get_clean();
+		$filename = 'attendance_' . $course_id . "_" . date('Ymd') .'_' . date('His');
+		// Output CSV-specific headers
+		header("Pragma: public");
+		header("Expires: 0");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Cache-Control: private",false);
+		header("Content-Type: text/csv");
+		header("Content-Disposition: attachment; filename=\"$filename.csv\";" );
+		header("Content-Transfer-Encoding: binary");
+		exit($string);
+	}
+
+	function checkbox_for($student, $event_id) {
+		global $student_status;
+		?>
+			<input
+				onchange="recordChange(this, this.getAttribute('data-event-id'), this.getAttribute('data-student-name'), this.checked ? 1 : 0);"
+				type="checkbox"
+				data-event-id="<?php echo $event_id; ?>"
+				data-student-name="<?php echo htmlentities($student); ?>"
+				<?php if($student_status[$event_id][$student]) echo "checked=\"checked\""; ?>
+			/>
+		<?php
+	}
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -372,6 +520,24 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		transition: all ease-out 1s;
 		background-color: #f00;
 	}
+
+	table {
+		border-collapse: collapse;
+		margin-top: 1em;
+	}
+
+	td, th {
+		border: solid 1px black;
+		padding: 0.25em;
+	}
+
+	td {
+		text-align: center;
+	}
+
+	td:first-child {
+		text-align: right;
+	}
 </style>
 </head>
 <body>
@@ -389,21 +555,85 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	It can also display just one column at a time.
 	-->
 
-	Attendance for <?php echo htmlentities($event_name); ?>
-	<ol>
+	Attendance for <?php echo htmlentities($single_event ? $event_name : "all events"); ?>
+
+	<?php
+		if($is_staff) {
+	?>
+		<form>
+			<input type="hidden" name="course_id" value="<?php echo (int) $course_id; ?>" />
+			<input type="hidden" name="event_name" value="<?php echo htmlentities($event_name); ?>" />
+			<select name="lc">
+				<option></option>
+				<?php
+					$lcs = get_cohort_lcs($course_id);
+					foreach($lcs as $lc) {
+						?>
+							<option value="<?php echo htmlentities($lc["email"]); ?>"
+								<?php
+									if($lc["email"] == $lc_email)
+										echo "selected";
+								?>
+							>
+								<?php echo htmlentities($lc["name"]); ?>
+							</option>
+						<?php
+					}
+				?>
+			</select>
+			<input type="submit" value="Switch Cohort" />
+		</form>
+		<a href="attendance.php?course_id=<?php echo (int) $course_id;?>&download=csv">Download CSV</a>
+	<?php
+		}
+	?>
+
 		<?php
-			foreach($student_list as $student) {
-		?>
-			<li><label><input
-				onchange="recordChange(this, this.getAttribute('data-event-id'), this.getAttribute('data-student-name'), this.checked ? 1 : 0);"
-				type="checkbox"
-				data-event-id="<?php echo $event_id; ?>"
-				data-student-name="<?php echo htmlentities($student); ?>"
-				<?php if($student_status[$student]) echo "checked=\"checked\""; ?>
-			/> <?php echo htmlentities($student); ?></label></li>
-		<?php
+			$tag = "li";
+			if($single_event) {
+				$tag = "li";
+				echo "<ol>";
+			} else {
+				echo "<table>";
+				echo "<tr><th>Student</th>";
+				foreach($events as $event)
+					echo "<th>".htmlentities($event["name"])."</th>";
+				echo "</tr>";
+				$tag = "td";
 			}
+			foreach($student_list as $student) {
+				if($tag == "li")
+					echo "<li><label>";
+				else {
+					echo "<tr>";
+					echo "<td>";
+					echo htmlentities($student);
+					echo "</td>";
+				}
+
+				if($single_event)
+					checkbox_for($student, $event_id);
+				else {
+					foreach($events as $event) {
+						echo "<td>";
+						checkbox_for($student, $event["id"]);
+						echo "</td>";
+					}
+				}
+
+				if($tag == "li")
+					echo htmlentities($student);
+			?>
+		<?php
+				if($tag == "li")
+					echo "</label></li>";
+				else
+					echo "</tr>";
+			}
+			if($tag == "li")
+				echo "</ol>";
+			else
+				echo "</table>";
 		?>
-	</ol>
 </body>
 </html>
