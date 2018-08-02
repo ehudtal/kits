@@ -960,8 +960,8 @@ function bz_show_cohort_magic_fields( $atts, $content = null) {
 	    			$str_to_return .= ($fanswer) ? '<dd>'.$fanswer.'</dd>' : '<dd class="na">'.__('N/A', 'bz').'</dd>';
 	    		}
 	    	}
+		$str_to_return .= '</dl></div>';
 	    }
-	    $str_to_return .= '</dl></div>';
 	}
     return $str_to_return;
 
