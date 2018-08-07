@@ -1,9 +1,4 @@
 <?php
-/*
-	TODO
-		show multiple columns for one-on-one convos
-*/
-
 $WP_CONFIG = array();
 
 function bzLoadWpConfig() {
@@ -649,7 +644,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 					echo "</tr>";
 			}
 			if($tag == "li")
-				echo "</ol><a href=\"attendance.php\" target=\"_BLANK\">See All Events</a>";
+				echo "</ol><a href=\"attendance.php?course_id=$course_id&amp;lc=".urlencode($lc_email)."\" target=\"_BLANK\">See All Events</a>";
 			else {
 				echo "<tr><th>Total</th>";
 				foreach($events as $event) {
