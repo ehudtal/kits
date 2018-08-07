@@ -1,8 +1,6 @@
 <?php
 /*
 	TODO
-		let lc's see history (go to the grid view)
-		let staff substitute for lc
 		show multiple columns for one-on-one convos
 */
 
@@ -161,11 +159,15 @@ function create_event($course_id, $event_name) {
 }
 
 
-function load_student_status($event_id, $students) {
-	if(count($students) == 0)
+function load_student_status($event_id, $students_info) {
+	if(count($students_info) == 0)
 		return array();
 
 	global $pdo;
+
+	$students = array();
+	foreach($students_info as $student)
+		$students[] = $student["name"];
 
 	$statement = $pdo->prepare("
 		SELECT
@@ -225,13 +227,9 @@ function sso() {
 		$xml->loadXML($content);
 		$user = $xml->getElementsByTagNameNS("*", "user")->item(0)->textContent;
 
-		if($user == "admin@beyondz.org" || strpos($user, "@bebraven.org") !== FALSE) {
-			// login successful
-			$_SESSION["user"] = $user;
-		} else {
-			echo "User " . htmlentities($user) . " is not authorized. Try logging out of SSO first.";
-			exit;
-		}
+		// login successful
+		$_SESSION["user"] = $user;
+			//echo "User " . htmlentities($user) . " is not authorized. Try logging out of SSO first.";
 
 		header("Location: " . $coming_from);
 		exit;
@@ -266,50 +264,7 @@ $pdo_opt = [
 
 $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTENDANCE_NAME"]};charset=utf8mb4", $WP_CONFIG["DB_USER"], $WP_CONFIG["DB_PASSWORD"], $pdo_opt);
 
-	/**
-		Gets user magic field responses
-
-		$magic_field_names is an array btw.
-
-		Need to define CANVAS_TOKEN defined in wp-config.php btw.
-
-		Returns an object with field names as keys, an object with student names
-		as keys and values as, well, values.
-	*/
-	function get_cohort_magic_fields($course_id, $lc_email, $magic_field_names) {
-		global $WP_CONFIG;
-
-		$names_url = "";
-		foreach($magic_field_names as $name)
-			$names_url .= "&fields[]=" . urlencode($name);
-
-		$ch = curl_init();
-		$url = 'https://stagingportal.bebraven.org/bz/magic_fields_for_cohort?course_id='.((int) $course_id).'&email=' . urlencode($lc_email) . '&access_token=' . urlencode($WP_CONFIG["CANVAS_TOKEN"]) . $names_url;
-		// Change stagingportal to portal here when going live!
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$answer = curl_exec($ch);
-		curl_close($ch);
-
-		// trim off any cross-site get padding, if present,
-		// keeping just the json object
-		$answer = substr($answer, strpos($answer, "{"));
-		$obj = json_decode($answer, TRUE);
-		return $obj["answers"];
-	}
-
-	function get_cohort_lcs($course_id) {
-		if(0)
-		return array(
-			array(
-				"name" => "Stephanie Baeza",
-				"email" => "sbaeza88@gmail.com"
-			),
-			array(
-				"name" => "Elymae Cedeno",
-				"email" => "elymaec@gmail.com"
-			)
-		);
+	function get_cohorts_info($course_id) {
 		global $WP_CONFIG;
 
 		$ch = curl_init();
@@ -327,14 +282,20 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 
 		$sections = $obj["courses"][0]["sections"];
 		$lcs = array();
+		$students = array();
 		foreach($sections as $section) {
 			foreach($section["enrollments"] as $enrollment) {
 				if($enrollment["type"] == "TaEnrollment")
 					$lcs[] = $enrollment;
+				if($enrollment["type"] == "StudentEnrollment")
+					$students[] = $enrollment;
 			}
 		}
 
-		return $lcs;
+		return array(
+			"lcs" => $lcs,
+			"sections" => $sections
+		);
 	}
 
 	if(isset($_POST["operation"])) {
@@ -369,11 +330,11 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 
 	$event_id = 0;
 	$event_name = "";
-	if(isset($_GET["event_id"])) {
+	if(isset($_GET["event_id"]) && $_GET["event_id"] != "") {
 		$event_id = $_GET["event_id"];
 		$event_name = get_event_info($event_id)["name"];
 		$single_event = true;
-	} else if(isset($_GET["event_name"])) {
+	} else if(isset($_GET["event_name"]) && $_GET["event_name"] != "") {
 		$event_name = $_GET["event_name"];
 		$event_id = get_event_info_by_name($course_id, $event_name)["id"];
 		$single_event = true;
@@ -381,8 +342,33 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		$single_event = false;
 	}
 
+	$cohort_info = get_cohorts_info($course_id);
+
+	function get_student_list($lc) {
+		global $cohort_info;
+
+		$list = array();
+		$keep_this_one = false;
+		foreach($cohort_info["sections"] as $section) {
+			$students = array();
+			foreach($section["enrollments"] as $enrollment) {
+				if($enrollment["type"] == "TaEnrollment") {
+					if($lc != null && $enrollment["email"] == $lc)
+						$keep_this_one = true;
+				}
+				if($enrollment["type"] == "StudentEnrollment") {
+					$students[] = $enrollment;
+					$list[] = $enrollment;
+				}
+			}
+			if($keep_this_one)
+				return $students;
+		}
+		return $lc == null ? $list : array();
+	}
+
 	if(!isset($_GET["download"])) {
-		$student_list = array_keys(get_cohort_magic_fields($course_id, $lc_email, ['student_list'])["student_list"]);
+		$student_list = get_student_list(((!isset($_GET["lc"]) || $_GET["lc"] == "All") && $is_staff) ? null : $lc_email);
 		$student_status = array();
 		if($event_id)
 			$student_status[$event_id] = load_student_status($event_id, $student_list);
@@ -399,27 +385,29 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		ob_start();
 
 		$events = get_all_events($course_id);
-		$headers = array("Student", "Course ID", "LC Email");
+		$headers = array("Student Name", "Student Email", "Course ID", "LC Name", "LC Email");
 		foreach($events as $event)
 			$headers[] = $event["name"];
 
 		fputcsv($fp, $headers);
 
-		$lcs = get_cohort_lcs($course_id);
+		$lcs = $cohort_info["lcs"];
 		foreach($lcs as $lc) {
 			$lc_email = $lc["email"];
-			$student_list = array_keys(get_cohort_magic_fields($course_id, $lc_email, ['student_list'])["student_list"]);
+			$student_list = get_student_list(null);
 			$student_status = array();
 			foreach($events as $event) {
 				$student_status[$event["id"]] = load_student_status($event["id"], $student_list);
 			}
 			foreach($student_list as $student) {
 				$data = array();
-				$data[] = $student;
+				$data[] = $student["name"];
+				$data[] = $student["email"];
 				$data[] = $course_id;
+				$data[] = $lc["name"];
 				$data[] = $lc_email;
 				foreach($events as $event) {
-					$data[] = $student_status[$event["id"]][$student] ? "true" : "false";
+					$data[] = $student_status[$event["id"]][$student["name"]] ? "true" : "false";
 				}
 
 				fputcsv($fp, $data);
@@ -446,10 +434,11 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 				onchange="recordChange(this, this.getAttribute('data-event-id'), this.getAttribute('data-student-name'), this.checked ? 1 : 0);"
 				type="checkbox"
 				data-event-id="<?php echo $event_id; ?>"
-				data-student-name="<?php echo htmlentities($student); ?>"
-				<?php if($student_status[$event_id][$student]) echo "checked=\"checked\""; ?>
+				data-student-name="<?php echo htmlentities($student["name"]); ?>"
+				<?php if($student_status[$event_id][$student["name"]]) echo "checked=\"checked\""; ?>
 			/>
 		<?php
+		return $student_status[$event_id][$student["name"]];
 	}
 ?><!DOCTYPE html>
 <html>
@@ -500,6 +489,28 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			setTimeout(function() {
 				ele.parentNode.classList.remove("saved");
 			}, 1000);
+
+
+			var total = 0;
+			var there = 0;
+			var p = ele;
+			while(p && p.tagName != "TR") {
+				p = p.parentNode;
+			}
+			if(p) {
+				var inputs = p.querySelectorAll("input");
+				for(var a = 0; a < inputs.length; a++) {
+					total++;
+					if(inputs[a].checked)
+						there++;
+				}
+				p.querySelector(".percent").textContent = Math.round(there * 100 / total);
+
+
+				var pe = document.getElementById("percent-" + ele.getAttribute("data-event-id"));
+				pe.setAttribute("data-there", (pe.getAttribute("data-there")|0) + (ele.checked ? 1 : -1));
+				pe.textContent = Math.round(pe.getAttribute("data-there") * 100 / pe.getAttribute("data-total"));
+			}
 		};
 		http.send(data);
 	}
@@ -535,6 +546,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		text-align: center;
 	}
 
+	tr:not(:first-child) th:first-child,
 	td:first-child {
 		text-align: right;
 	}
@@ -564,9 +576,9 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			<input type="hidden" name="course_id" value="<?php echo (int) $course_id; ?>" />
 			<input type="hidden" name="event_name" value="<?php echo htmlentities($event_name); ?>" />
 			<select name="lc">
-				<option></option>
+				<option>All</option>
 				<?php
-					$lcs = get_cohort_lcs($course_id);
+					$lcs = $cohort_info["lcs"];
 					foreach($lcs as $lc) {
 						?>
 							<option value="<?php echo htmlentities($lc["email"]); ?>"
@@ -598,6 +610,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 				echo "<tr><th>Student</th>";
 				foreach($events as $event)
 					echo "<th>".htmlentities($event["name"])."</th>";
+				echo "<th>Total</th>";
 				echo "</tr>";
 				$tag = "td";
 			}
@@ -607,22 +620,27 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 				else {
 					echo "<tr>";
 					echo "<td>";
-					echo htmlentities($student);
+					echo htmlentities($student["name"]);
 					echo "</td>";
 				}
 
 				if($single_event)
 					checkbox_for($student, $event_id);
 				else {
+					$sthere = 0;
+					$stotal = 0;
 					foreach($events as $event) {
+						$stotal += 1;
 						echo "<td>";
-						checkbox_for($student, $event["id"]);
+						$sthere += checkbox_for($student, $event["id"]) ? 1 : 0;
 						echo "</td>";
 					}
+
+					echo "<td><span class=\"percent\">" . round($sthere * 100 / $stotal) . "</span>%</td>";
 				}
 
 				if($tag == "li")
-					echo htmlentities($student);
+					echo htmlentities($student["name"]);
 			?>
 		<?php
 				if($tag == "li")
@@ -631,9 +649,25 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 					echo "</tr>";
 			}
 			if($tag == "li")
-				echo "</ol>";
-			else
+				echo "</ol><a href=\"attendance.php\" target=\"_BLANK\">See All Events</a>";
+			else {
+				echo "<tr><th>Total</th>";
+				foreach($events as $event) {
+					echo "<td>";
+					$there = 0;
+					$total = 0;
+					foreach($student_status[$event["id"]] as $status) {
+						$total += 1;
+						if($status)
+							$there += 1;
+					}
+					echo "<span data-total=\"$total\" data-there=\"$there\" id=\"percent-{$event["id"]}\" class=\"percent\">" . round($there * 100 / $total) . "</span>%";
+					echo "</td>";
+				}
+				echo "<td></td>";
+				echo "</tr>";
 				echo "</table>";
+			}
 		?>
 </body>
 </html>
