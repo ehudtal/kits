@@ -1003,10 +1003,16 @@ add_shortcode( 'course-specific', 'bz_personalize_content_by_course' );
 function bz_attendance($atts, $content = null) {
     global $course;
 
+    $width = 100;
+    if(isset($atts["width"]))
+       $width = (int) $atts["width"];
+    if($width < 20)
+       $width = 100;
+
     return "<iframe onload=\"
         this.style.height = (30 + this.contentWindow.document.body.scrollHeight) + 'px';
         this.style.border = 'none';
-        this.style.width = '30%';
+        this.style.width = '".$width."%';
         this.style.padding = '0px';
         var magic = this;
         setTimeout(function() { magic.onload(); }, 1000);
