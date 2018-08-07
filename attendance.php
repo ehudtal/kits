@@ -39,10 +39,10 @@ SET NAMES utf8mb4;
 
 	CREATE TABLE attendance_people (
 		event_id INTEGER NOT NULL,
-		person_name VARCHAR(180) NOT NULL,
+		person_id INTEGER NOT NULL,
 		present INTEGER NULL, -- null means unknown, 0 means no, 1 means there, 2 means late
 		FOREIGN KEY (event_id) REFERENCES attendance_events(id) ON DELETE CASCADE,
-		PRIMARY KEY(event_id, person_name)
+		PRIMARY KEY(event_id, person_id)
 	) DEFAULT CHARACTER SET=utf8mb4;
 
 	COMMIT;
@@ -50,12 +50,12 @@ SET NAMES utf8mb4;
 
 session_start();
 
-function set_attendance($event_id, $person_name, $present) {
+function set_attendance($event_id, $person_id, $present) {
 	global $pdo;
 
 	$statement = $pdo->prepare("
 		INSERT INTO attendance_people
-			(event_id, person_name, present)
+			(event_id, person_id, present)
 		VALUES
 			(?, ?, ?)
 		ON DUPLICATE KEY UPDATE
@@ -64,7 +64,7 @@ function set_attendance($event_id, $person_name, $present) {
 
 	$statement->execute(array(
 		$event_id,
-		$person_name,
+		$person_id,
 		$present,
 		$present
 	));
@@ -162,17 +162,17 @@ function load_student_status($event_id, $students_info) {
 
 	$students = array();
 	foreach($students_info as $student)
-		$students[] = $student["name"];
+		$students[] = $student["id"];
 
 	$statement = $pdo->prepare("
 		SELECT
-			person_name, present
+			person_id, present
 		FROM
 			attendance_people
 		WHERE
 			event_id = ?
 			AND
-			person_name IN  (".str_repeat('?,', count($students) - 1)."?)
+			person_id IN  (".str_repeat('?,', count($students) - 1)."?)
 
 	");
 
@@ -186,7 +186,7 @@ function load_student_status($event_id, $students_info) {
 
 	$statement->execute($args);
 	while($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-		$result[$row["person_name"]] = $row["present"];
+		$result[$row["person_id"]] = $row["present"];
 	}
 
 	return $result;
@@ -263,7 +263,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		global $WP_CONFIG;
 
 		$ch = curl_init();
-		$url = 'https://stagingportal.bebraven.org/bz/course_cohort_information?course_ids[]='.((int) $course_id). '&access_token=' . urlencode($WP_CONFIG["CANVAS_TOKEN"]);
+		$url = 'https://'.$WP_CONFIG["BRAVEN_PORTAL_DOMAIN"].'/bz/course_cohort_information?course_ids[]='.((int) $course_id). '&access_token=' . urlencode($WP_CONFIG["CANVAS_TOKEN"]);
 		// Change stagingportal to portal here when going live!
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -294,7 +294,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	}
 
 	if(isset($_POST["operation"])) {
-		set_attendance($_POST["event_id"], $_POST["student_name"], $_POST["present"]);
+		set_attendance($_POST["event_id"], $_POST["student_id"], $_POST["present"]);
 		exit;
 	}
 
@@ -389,7 +389,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		$lcs = $cohort_info["lcs"];
 		foreach($lcs as $lc) {
 			$lc_email = $lc["email"];
-			$student_list = get_student_list(null);
+			$student_list = get_student_list($lc_email);
 			$student_status = array();
 			foreach($events as $event) {
 				$student_status[$event["id"]] = load_student_status($event["id"], $student_list);
@@ -402,7 +402,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 				$data[] = $lc["name"];
 				$data[] = $lc_email;
 				foreach($events as $event) {
-					$data[] = $student_status[$event["id"]][$student["name"]] ? "true" : "false";
+					$data[] = $student_status[$event["id"]][$student["id"]] ? "true" : "false";
 				}
 
 				fputcsv($fp, $data);
@@ -426,14 +426,15 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		global $student_status;
 		?>
 			<input
-				onchange="recordChange(this, this.getAttribute('data-event-id'), this.getAttribute('data-student-name'), this.checked ? 1 : 0);"
+				onchange="recordChange(this, this.getAttribute('data-event-id'), this.getAttribute('data-student-id'), this.checked ? 1 : 0);"
 				type="checkbox"
 				data-event-id="<?php echo $event_id; ?>"
 				data-student-name="<?php echo htmlentities($student["name"]); ?>"
-				<?php if($student_status[$event_id][$student["name"]]) echo "checked=\"checked\""; ?>
+				data-student-id="<?php echo htmlentities($student["id"]); ?>"
+				<?php if($student_status[$event_id][$student["id"]]) echo "checked=\"checked\""; ?>
 			/>
 		<?php
-		return $student_status[$event_id][$student["name"]];
+		return $student_status[$event_id][$student["id"]];
 	}
 ?><!DOCTYPE html>
 <html>
@@ -458,7 +459,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	}
 </style>
 <script>
-	function recordChange(ele, event_id, student_name, present) {
+	function recordChange(ele, event_id, student_id, present) {
 		ele.parentNode.classList.add("saving");
 		ele.parentNode.classList.remove("error-saving");
 		var http = new XMLHttpRequest();
@@ -469,7 +470,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 		data += "&";
 		data += "event_id=" + encodeURIComponent(event_id);
 		data += "&";
-		data += "student_name=" + encodeURIComponent(student_name);
+		data += "student_id=" + encodeURIComponent(student_id);
 		data += "&";
 		data += "present=" + encodeURIComponent(present);
 
