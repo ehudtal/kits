@@ -1006,7 +1006,7 @@ function bz_attendance($atts, $content = null) {
     return "<iframe onload=\"
         this.style.height = (30 + this.contentWindow.document.body.scrollHeight) + 'px';
         this.style.border = 'none';
-        this.style.width = '100%';
+        this.style.width = '30%';
         this.style.padding = '0px';
         var magic = this;
         setTimeout(function() { magic.onload(); }, 1000);
