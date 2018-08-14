@@ -457,6 +457,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 
 	ol {
 		list-style: none;
+		padding-left: 0;
 	}
 
 	li {
@@ -466,6 +467,17 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	label, input {
 		vertical-align: middle;
 	}
+
+	a {
+		color: #378383;
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: #046366;
+		text-decoration: underline;
+	}
+
 </style>
 <script>
 	function recordChange(ele, event_id, student_id, present) {
@@ -601,7 +613,6 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			</select>
 			<input type="submit" value="Switch Cohort" />
 		</form>
-		<a href="attendance.php?course_id=<?php echo (int) $course_id;?>&download=csv">Download CSV</a>
 	<?php
 		}
 	?>
@@ -649,13 +660,14 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 					echo htmlentities($student["name"]);
 			?>
 		<?php
-				if($tag == "li")
-					echo "</label></li>";
-				else
-					echo "</tr>";
+			if($tag == "li")
+				echo "</label></li>";
+			else
+				echo "</tr>";
 			}
 			if($tag == "li")
 				echo "</ol><a href=\"attendance.php?course_id=$course_id&amp;lc=".urlencode($lc_email)."\" target=\"_BLANK\">See All LLs/Events</a>";
+				if($is_staff) echo " | ";
 			else {
 				echo "<tr><th>Total</th>";
 				foreach($events as $event) {
@@ -674,6 +686,9 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 				echo "</tr>";
 				echo "</table>";
 			}
+			if($is_staff) { ?>
+					<a href="attendance.php?course_id=<?php echo (int) $course_id;?>&download=csv">Download CSV</a>
+			<?php	 }
 		?>
 </body>
 </html>
