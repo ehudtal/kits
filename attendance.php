@@ -338,8 +338,6 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	}
 
 	$cohort_info = get_cohorts_info($course_id);
-	print_r($cohort_info);
-	exit;
 
 	function get_student_list($lc) {
 		global $cohort_info;
@@ -373,7 +371,6 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 
 	if(!isset($_GET["download"])) {
 		$student_list = get_student_list(((!isset($_GET["lc"]) || $_GET["lc"] == "All") && $is_staff) ? null : $lc_email);
-		print_r($student_list);
 		$student_status = array();
 		if($event_id)
 			$student_status[$event_id] = load_student_status($event_id, $student_list);
