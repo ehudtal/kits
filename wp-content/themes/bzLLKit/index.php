@@ -35,7 +35,6 @@ get_header(); ?>
 
 			// $current_user_email = wp_get_current_user()->user_email;
 			// FOR TESTING:
-			// $current_user_email = 'aalcones@fb.com';
 			/*
 			if ( strpos($current_user_email, 'bebraven.org') === FALSE) {
 				$user_courses = bz_get_user_courses($current_user_email);
