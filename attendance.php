@@ -356,11 +356,17 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 					$list[] = $enrollment;
 				}
 			}
-			if($keep_this_one)
+			if($keep_this_one) {
+				usort($students, "cmp");
 				return $students;
+			}
 		}
 		unset($section);
 		return $lc == null ? $list : array();
+	}
+
+	function cmp($a, $b) {
+		return strcmp($a["name"], $b["name"]);
 	}
 
 	if(!isset($_GET["download"])) {
@@ -575,9 +581,6 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			<select name="lc">
 				<option>All</option>
 				<?php
-					function cmp($a, $b) {
-						return strcmp($a["name"], $b["name"]);
-					}
 					usort($cohort_info["lcs"], "cmp");
 					$lcs = $cohort_info["lcs"];
 					foreach($lcs as $lc) {
