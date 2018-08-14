@@ -1014,6 +1014,7 @@ function bz_attendance($atts, $content = null) {
         this.style.border = 'none';
         this.style.width = '".$width."%';
         this.style.padding = '0px';
+        this.style.margin = '0 -8px';
         var magic = this;
         setTimeout(function() { magic.onload(); }, 1000);
     \" src=\"/attendance.php?course_name=".htmlentities($course)."&amp;event_name=".htmlentities($atts["event"])."\"></iframe>";

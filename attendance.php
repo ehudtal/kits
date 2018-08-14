@@ -449,8 +449,10 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 <title>Attendance Tracker</title>
 <style>
 	body {
-		font-family: sans-serif;
-		font-size: 20px;
+		font-family: Georgia, serif;
+		line-height: 1.2em;
+		margin: 8px;
+		padding: 0;
 	}
 
 	ol {
@@ -570,7 +572,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	It can also display just one column at a time.
 	-->
 
-	Attendance for <?php echo htmlentities($single_event ? $event_name : "all events"); ?>
+	Attendance for <?php echo htmlentities($single_event ? $event_name : "all LLs/events"); ?>
 
 	<?php
 		if($is_staff) {
@@ -653,7 +655,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 					echo "</tr>";
 			}
 			if($tag == "li")
-				echo "</ol><a href=\"attendance.php?course_id=$course_id&amp;lc=".urlencode($lc_email)."\" target=\"_BLANK\">See All Events</a>";
+				echo "</ol><a href=\"attendance.php?course_id=$course_id&amp;lc=".urlencode($lc_email)."\" target=\"_BLANK\">See All LLs/Events</a>";
 			else {
 				echo "<tr><th>Total</th>";
 				foreach($events as $event) {
