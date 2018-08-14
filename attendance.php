@@ -359,6 +359,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			if($keep_this_one)
 				return $students;
 		}
+		unset($section);
 		return $lc == null ? $list : array();
 	}
 
