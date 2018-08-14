@@ -574,6 +574,10 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			<select name="lc">
 				<option>All</option>
 				<?php
+					function cmp($a, $b) {
+						return strcmp($a["name"], $b["name"]);
+					}
+					usort($cohort_info["lcs"], "cmp");
 					$lcs = $cohort_info["lcs"];
 					foreach($lcs as $lc) {
 						?>
