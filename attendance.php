@@ -307,10 +307,10 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	else if(isset($_GET["course_name"])) {
 		switch($_GET["course_name"]) {
 			case "sjsu":
-				$course_id = 40;
+				$course_id = 45;
 			break;
 			case "run":
-				$course_id = 41;
+				$course_id = 49;
 			break;
 			case "nlu":
 				$course_id = 39;
@@ -338,6 +338,8 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 	}
 
 	$cohort_info = get_cohorts_info($course_id);
+	print_r($cohort_info);
+	exit;
 
 	function get_student_list($lc) {
 		global $cohort_info;
@@ -371,6 +373,7 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 
 	if(!isset($_GET["download"])) {
 		$student_list = get_student_list(((!isset($_GET["lc"]) || $_GET["lc"] == "All") && $is_staff) ? null : $lc_email);
+		print_r($student_list);
 		$student_status = array();
 		if($event_id)
 			$student_status[$event_id] = load_student_status($event_id, $student_list);
@@ -665,10 +668,10 @@ $pdo = new PDO("mysql:host={$WP_CONFIG["DB_HOST"]};dbname={$WP_CONFIG["DB_ATTEND
 			else
 				echo "</tr>";
 			}
-			if($tag == "li")
+			if($tag == "li") {
 				echo "</ol><a href=\"attendance.php?course_id=$course_id&amp;lc=".urlencode($lc_email)."\" target=\"_BLANK\">See All LLs/Events</a>";
 				if($is_staff) echo " | ";
-			else {
+			} else {
 				echo "<tr><th>Total</th>";
 				foreach($events as $event) {
 					echo "<td>";
